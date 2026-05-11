@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">OpenWhisper</string>
+    <string name="login">Log in</string>
+    <string name="register">Register</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="email">Email</string>
+    <string name="password_confirm">Confirm password</string>
+    <string name="create_account">Create account</string>
+    <string name="already_have_account">Already have an account? Log in</string>
+    <string name="no_account">No account? Register</string>
+    <string name="chats">Chats</string>
+    <string name="logout">Log out</string>
+    <string name="send">Send</string>
+    <string name="message_hint">Message</string>
+    <string name="error_generic">Something went wrong.</string>
+    <string name="error_network">Network error.</string>
+    <string name="registration_ok">Account created. You can log in.</string>
+    <string name="password_mismatch">Passwords do not match.</string>
+</resources>

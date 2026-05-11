@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.OpenWhisper" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">@color/ow_primary</item>
+        <item name="colorPrimaryContainer">@color/ow_primary_container</item>
+        <item name="colorOnPrimary">@color/ow_on_primary</item>
+    </style>
+</resources>

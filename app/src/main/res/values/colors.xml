@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="ow_primary">#1565C0</color>
+    <color name="ow_primary_container">#BBDEFB</color>
+    <color name="ow_on_primary">#FFFFFF</color>
+    <color name="ow_sent_bubble">#E3F2FD</color>
+    <color name="ow_received_bubble">#F5F5F5</color>
+</resources>
