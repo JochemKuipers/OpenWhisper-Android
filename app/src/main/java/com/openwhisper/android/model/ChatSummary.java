@@ -6,7 +6,6 @@ import android.text.Spanned;
 import android.text.style.StyleSpan;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -24,6 +23,12 @@ public final class ChatSummary {
 
     @SerializedName("title")
     public String title;
+
+    @SerializedName("display_title")
+    public String displayTitle;
+
+    @SerializedName("member_subtitle")
+    public String memberSubtitle;
 
     @SerializedName("users")
     public List<UserRef> users;
@@ -45,79 +50,39 @@ public final class ChatSummary {
         return -1;
     }
 
-    public boolean isDirectChat() {
-        return users != null && users.size() == 2;
-    }
-
-    @Nullable
-    public String otherUsername(@Nullable String currentUsername) {
-        if (!isDirectChat() || currentUsername == null) {
-            return null;
+    /** Resolved list/header title from the API (per authenticated user). */
+    public String getDisplayTitle() {
+        if (displayTitle != null && !displayTitle.isBlank()) {
+            return displayTitle.trim();
         }
-        for (UserRef user : users) {
-            if (user != null
-                    && user.username != null
-                    && !user.username.equalsIgnoreCase(currentUsername)) {
-                return user.username;
-            }
-        }
-        return null;
-    }
-
-    public String displayTitle(@Nullable String currentUsername, @NonNull String defaultGroupTitle) {
         if (title != null && !title.isBlank()) {
             return title.trim();
         }
-        String other = otherUsername(currentUsername);
-        if (other != null) {
-            return other;
-        }
-        return defaultGroupTitle;
+        return "Chat";
     }
 
-    /** Plain-text member list for search; empty for 1:1 chats. */
-    public String memberSubtitlePlain(@Nullable String currentUsername, @NonNull String youLabel) {
-        if (isDirectChat() || users == null || users.isEmpty()) {
+    /** Plain member subline for groups; empty for 1:1 chats. */
+    public String getMemberSubtitle() {
+        return memberSubtitle != null ? memberSubtitle : "";
+    }
+
+    /** Same as {@link #getMemberSubtitle()} with the requester's "You" label in bold. */
+    public CharSequence getMemberSubtitleStyled(@NonNull String youLabel) {
+        String plain = getMemberSubtitle();
+        if (plain.isEmpty()) {
             return "";
         }
-        return joinMemberNames(currentUsername, youLabel, false).toString();
-    }
-
-    /** Styled member list for the chat list; empty for 1:1 chats. */
-    public CharSequence memberSubtitleDisplay(@Nullable String currentUsername, @NonNull String youLabel) {
-        if (isDirectChat() || users == null || users.isEmpty()) {
-            return "";
+        SpannableStringBuilder styled = new SpannableStringBuilder(plain);
+        int index = 0;
+        while ((index = plain.indexOf(youLabel, index)) >= 0) {
+            styled.setSpan(
+                    new StyleSpan(Typeface.BOLD),
+                    index,
+                    index + youLabel.length(),
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            index += youLabel.length();
         }
-        return joinMemberNames(currentUsername, youLabel, true);
-    }
-
-    private CharSequence joinMemberNames(
-            @Nullable String currentUsername, @NonNull String youLabel, boolean boldYou) {
-        SpannableStringBuilder sb = new SpannableStringBuilder();
-        boolean first = true;
-        for (UserRef user : users) {
-            if (user == null || user.username == null) {
-                continue;
-            }
-            if (!first) {
-                sb.append(", ");
-            }
-            first = false;
-            if (currentUsername != null && user.username.equalsIgnoreCase(currentUsername)) {
-                int start = sb.length();
-                sb.append(youLabel);
-                if (boldYou) {
-                    sb.setSpan(
-                            new StyleSpan(Typeface.BOLD),
-                            start,
-                            sb.length(),
-                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                }
-            } else {
-                sb.append(user.username);
-            }
-        }
-        return sb;
+        return styled;
     }
 
     public static final class UserRef {

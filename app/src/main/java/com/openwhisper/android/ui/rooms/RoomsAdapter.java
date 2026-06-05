@@ -7,7 +7,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.openwhisper.android.databinding.ItemRoomBinding;
-import com.openwhisper.android.data.UserSession;
 import com.openwhisper.android.model.ChatSummary;
 import com.openwhisper.android.util.AvatarText;
 
@@ -25,16 +24,11 @@ public final class RoomsAdapter extends RecyclerView.Adapter<RoomsAdapter.VH> {
     private final List<ChatSummary> visibleItems = new ArrayList<>();
     private final Listener listener;
     private final String youLabel;
-    private final String defaultGroupTitle;
     private String query = "";
 
-    public RoomsAdapter(
-            @NonNull Listener listener,
-            @NonNull String youLabel,
-            @NonNull String defaultGroupTitle) {
+    public RoomsAdapter(@NonNull Listener listener, @NonNull String youLabel) {
         this.listener = listener;
         this.youLabel = youLabel;
-        this.defaultGroupTitle = defaultGroupTitle;
     }
 
     public void setItems(List<ChatSummary> next) {
@@ -60,10 +54,9 @@ public final class RoomsAdapter extends RecyclerView.Adapter<RoomsAdapter.VH> {
         if (query.isEmpty()) {
             visibleItems.addAll(allItems);
         } else {
-            String me = UserSession.getUsername();
             for (ChatSummary chat : allItems) {
-                String title = chat.displayTitle(me, defaultGroupTitle).toLowerCase(Locale.ROOT);
-                String subtitle = chat.memberSubtitlePlain(me, youLabel).toLowerCase(Locale.ROOT);
+                String title = chat.getDisplayTitle().toLowerCase(Locale.ROOT);
+                String subtitle = chat.getMemberSubtitle().toLowerCase(Locale.ROOT);
                 if (title.contains(query) || subtitle.contains(query)) {
                     visibleItems.add(chat);
                 }
@@ -80,7 +73,7 @@ public final class RoomsAdapter extends RecyclerView.Adapter<RoomsAdapter.VH> {
 
     @Override
     public void onBindViewHolder(@NonNull VH holder, int position) {
-        holder.bind(visibleItems.get(position), listener, youLabel, defaultGroupTitle);
+        holder.bind(visibleItems.get(position), listener, youLabel);
     }
 
     @Override
@@ -96,11 +89,10 @@ public final class RoomsAdapter extends RecyclerView.Adapter<RoomsAdapter.VH> {
             this.binding = binding;
         }
 
-        void bind(ChatSummary chat, Listener listener, String youLabel, String defaultGroupTitle) {
-            String me = UserSession.getUsername();
-            String title = chat.displayTitle(me, defaultGroupTitle);
+        void bind(ChatSummary chat, Listener listener, String youLabel) {
+            String title = chat.getDisplayTitle();
             binding.title.setText(title);
-            CharSequence subtitle = chat.memberSubtitleDisplay(me, youLabel);
+            CharSequence subtitle = chat.getMemberSubtitleStyled(youLabel);
             binding.subtitle.setText(subtitle);
             binding.subtitle.setVisibility(subtitle.length() == 0 ? android.view.View.GONE : android.view.View.VISIBLE);
             AvatarText.apply(binding.avatar, title);

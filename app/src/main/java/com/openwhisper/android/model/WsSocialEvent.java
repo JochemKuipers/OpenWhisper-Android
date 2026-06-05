@@ -12,4 +12,10 @@ public final class WsSocialEvent {
 
     @SerializedName("chat_id")
     public Integer chatId;
+
+    @SerializedName("display_title")
+    public String displayTitle;
+
+    @SerializedName("member_subtitle")
+    public String memberSubtitle;
 }
