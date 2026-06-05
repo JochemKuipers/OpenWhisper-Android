@@ -134,10 +134,66 @@ Run instrumented tests locally if CI emulator jobs are flaky.
 
 ## Continuous integration
 
-GitHub Actions runs on every push and pull request:
+GitHub Actions runs on every push and pull request (`.github/workflows/android.yml`):
 
-- **unit-and-lint** — `testDebugUnitTest` and `lintDebug` on Ubuntu
+- **unit-and-lint** — `testDebugUnitTest` and `lintDebug` on Ubuntu (JDK 17, 21, 23)
 - **instrumented** — `connectedDebugAndroidTest` on an Android emulator
+
+## Releasing
+
+Releases are published to **GitHub Releases** when you push a version tag (`v1.0.0`, `v1.0.1`, …). The release workflow (`.github/workflows/release.yml`) runs tests, builds a signed APK, and attaches it to the release.
+
+### One-time setup
+
+1. **Signing key** — you should already have `openwhisper-upload.jks` in the project root (gitignored).
+2. **Local builds** — copy `keystore.properties.example` to `keystore.properties` and fill in your passwords:
+
+   ```properties
+   storeFile=openwhisper-upload.jks
+   storePassword=…
+   keyAlias=openwhisper
+   keyPassword=…
+   ```
+
+3. **GitHub Actions secrets** — in the repo go to **Settings → Secrets and variables → Actions** and add:
+
+   | Secret | Value |
+   |--------|--------|
+   | `ANDROID_KEYSTORE_BASE64` | Base64-encoded `.jks` file |
+   | `ANDROID_KEYSTORE_PASSWORD` | Keystore password |
+   | `ANDROID_KEY_ALIAS` | Key alias (e.g. `openwhisper`) |
+   | `ANDROID_KEY_PASSWORD` | Key password |
+
+   Encode the keystore (PowerShell):
+
+   ```powershell
+   [Convert]::ToBase64String([IO.File]::ReadAllBytes("openwhisper-upload.jks"))
+   ```
+
+### Cut a release
+
+1. Bump `versionCode` and `versionName` in `app/build.gradle.kts`.
+2. Commit and push to `main`.
+3. Tag and push:
+
+   ```bash
+   git tag v1.0.1
+   git push origin v1.0.1
+   ```
+
+4. GitHub Actions builds `openwhisper-android-1.0.1.apk` and attaches it to the release.
+
+### Local release build
+
+With `keystore.properties` in place:
+
+```bash
+./gradlew assembleRelease
+```
+
+Signed APK: `app/build/outputs/apk/release/app-release.apk`
+
+Users install the APK and set their OpenWhisper server URL in **Settings → Instance URL**.
 
 ## License
 

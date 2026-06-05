@@ -10,6 +10,8 @@ local.properties
 .idea/
 .cxx/
 .externalNativeBuild/
+*.jks
+keystore.properties
 
 # OS
 .DS_Store
