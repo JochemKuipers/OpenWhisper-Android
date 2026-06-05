@@ -4,6 +4,9 @@ import android.webkit.MimeTypeMap;
 
 import androidx.annotation.NonNull;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Locale;
 
 public final class AttachmentUtils {
@@ -66,5 +69,15 @@ public final class AttachmentUtils {
         }
         okhttp3.HttpUrl resolved = siteRoot.resolve(url);
         return resolved != null ? resolved.toString() : url;
+    }
+
+    public static byte[] readStreamToBytes(@NonNull InputStream in) throws IOException {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        byte[] buffer = new byte[8192];
+        int read;
+        while ((read = in.read(buffer)) != -1) {
+            out.write(buffer, 0, read);
+        }
+        return out.toByteArray();
     }
 }

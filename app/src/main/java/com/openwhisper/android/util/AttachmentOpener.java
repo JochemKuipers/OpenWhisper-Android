@@ -16,8 +16,6 @@ import androidx.core.content.FileProvider;
 
 import com.openwhisper.android.R;
 
-import com.openwhisper.android.util.AttachmentUtils;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -47,7 +45,7 @@ public final class AttachmentOpener {
                             try {
                                 Request request = new Request.Builder().url(resolved).build();
                                 try (Response response = client.newCall(request).execute()) {
-                                    if (!response.isSuccessful() || response.body() == null) {
+                                    if (!response.isSuccessful()) {
                                         showError(context, R.string.error_generic);
                                         return;
                                     }

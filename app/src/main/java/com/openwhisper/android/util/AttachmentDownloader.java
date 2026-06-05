@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 
 import com.openwhisper.android.R;
 
@@ -47,7 +48,7 @@ public final class AttachmentDownloader {
                             try {
                                 Request request = new Request.Builder().url(resolved).build();
                                 try (Response response = client.newCall(request).execute()) {
-                                    if (!response.isSuccessful() || response.body() == null) {
+                                    if (!response.isSuccessful()) {
                                         showToast(context, R.string.error_generic);
                                         return;
                                     }
@@ -65,14 +66,6 @@ public final class AttachmentDownloader {
                             }
                         })
                 .start();
-    }
-
-    public static void download(
-            @NonNull Context context,
-            @NonNull OkHttpClient client,
-            @NonNull HttpUrl siteRoot,
-            @NonNull String url) {
-        download(context, client, siteRoot, url, null);
     }
 
     private static String mimeTypeFromResponse(@NonNull Response response, @NonNull String fileName) {
@@ -97,6 +90,7 @@ public final class AttachmentDownloader {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     private static void saveViaMediaStore(
             @NonNull Context context,
             @NonNull InputStream in,

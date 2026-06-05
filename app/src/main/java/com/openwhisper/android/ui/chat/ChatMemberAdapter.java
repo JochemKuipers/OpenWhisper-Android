@@ -14,7 +14,7 @@ import com.openwhisper.android.util.AvatarText;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class ChatMemberAdapter extends RecyclerView.Adapter<ChatMemberAdapter.VH> {
+public final class ChatMemberAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     public interface Listener {
         void onRemoveMember(String username);
@@ -43,20 +43,21 @@ public final class ChatMemberAdapter extends RecyclerView.Adapter<ChatMemberAdap
         if (oldSize != 0) {
             notifyItemRangeRemoved(0, oldSize);
         }
-        if (members.size() != 0) {
+        if (!members.isEmpty()) {
             notifyItemRangeInserted(0, members.size());
         }
     }
 
     @NonNull
     @Override
-    public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new VH(ItemChatMemberBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false));
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        return new MemberViewHolder(
+                ItemChatMemberBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false));
     }
 
     @Override
-    public void onBindViewHolder(@NonNull VH holder, int position) {
-        holder.bind(members.get(position), listener);
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+        ((MemberViewHolder) holder).bind(members.get(position));
     }
 
     @Override
@@ -64,15 +65,15 @@ public final class ChatMemberAdapter extends RecyclerView.Adapter<ChatMemberAdap
         return members.size();
     }
 
-    final class VH extends RecyclerView.ViewHolder {
+    private final class MemberViewHolder extends RecyclerView.ViewHolder {
         private final ItemChatMemberBinding binding;
 
-        VH(ItemChatMemberBinding binding) {
+        MemberViewHolder(ItemChatMemberBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
         }
 
-        void bind(ChatSummary.UserRef user, Listener listener) {
+        void bind(ChatSummary.UserRef user) {
             if (user == null || user.username == null) {
                 return;
             }

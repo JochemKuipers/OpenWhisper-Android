@@ -11,7 +11,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.google.android.material.button.MaterialButtonToggleGroup;
 import com.openwhisper.android.BuildConfig;
 import com.openwhisper.android.OpenWhisperApp;
 import com.openwhisper.android.R;
@@ -62,7 +61,8 @@ public class SettingsFragment extends Fragment {
                 };
         binding.themeGroup.check(themeButtonId);
 
-        binding.themeGroup.addOnButtonCheckedListener(this::onThemeChanged);
+        binding.themeGroup.addOnButtonCheckedListener(
+                (group, checkedId, isChecked) -> applyThemeSelection(checkedId, isChecked));
 
         if (AppTheme.isDynamicColorAvailable()) {
             binding.dynamicColorsRow.setVisibility(View.VISIBLE);
@@ -80,8 +80,7 @@ public class SettingsFragment extends Fragment {
         }
     }
 
-    private void onThemeChanged(
-            @NonNull MaterialButtonToggleGroup group, int checkedId, boolean isChecked) {
+    private void applyThemeSelection(int checkedId, boolean isChecked) {
         if (!isChecked) {
             return;
         }

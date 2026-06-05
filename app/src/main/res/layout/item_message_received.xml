@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
 
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
 
     android:orientation="vertical"
 
@@ -102,7 +103,7 @@
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:contentDescription="@string/download_attachment"
                     android:src="@drawable/ic_download"
-                    android:tint="?attr/colorPrimary" />
+                    app:tint="?attr/colorPrimary" />
 
                 <ProgressBar
                     android:id="@+id/attachmentDownloadProgress"

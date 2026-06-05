@@ -50,10 +50,6 @@ public final class ChatListItem {
         }
     }
 
-    public ChatListItem(long messageId, boolean outgoing, String text, String timestamp, String createdAtIso) {
-        this(messageId, outgoing, text, timestamp, createdAtIso, null);
-    }
-
     private ChatListItem(String dateLabel) {
         this.messageId = -1L;
         this.dateHeader = true;

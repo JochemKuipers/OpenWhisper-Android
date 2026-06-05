@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.OpenableColumns;
-import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
@@ -350,7 +349,7 @@ public class ChatActivity extends BaseActivity implements ChatInfoBottomSheet.Ho
                     Toast.makeText(this, R.string.error_generic, Toast.LENGTH_SHORT).show();
                     return;
                 }
-                bytes = in.readAllBytes();
+                bytes = AttachmentUtils.readStreamToBytes(in);
             }
             if (bytes.length > AttachmentUtils.MAX_ATTACHMENT_BYTES) {
                 Toast.makeText(this, R.string.attachment_too_large, Toast.LENGTH_LONG).show();

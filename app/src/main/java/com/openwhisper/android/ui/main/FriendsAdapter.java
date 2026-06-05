@@ -49,7 +49,7 @@ public final class FriendsAdapter extends RecyclerView.Adapter<RecyclerView.View
         if (oldSize != 0) {
             notifyItemRangeRemoved(0, oldSize);
         }
-        if (items.size() != 0) {
+        if (!items.isEmpty()) {
             notifyItemRangeInserted(0, items.size());
         }
     }

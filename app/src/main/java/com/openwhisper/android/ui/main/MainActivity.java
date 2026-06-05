@@ -9,7 +9,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.openwhisper.android.OpenWhisperApp;
-import com.openwhisper.android.OpenWhisperApp;
 import com.openwhisper.android.R;
 import com.openwhisper.android.data.NetworkModule;
 import com.openwhisper.android.data.UserSession;
@@ -85,6 +84,7 @@ public class MainActivity extends BaseActivity implements MainHost {
                         : getIntent().getStringExtra(EXTRA_TAB) != null
                                 ? getIntent().getStringExtra(EXTRA_TAB)
                                 : TAB_CHATS;
+        assert tab != null;
         selectTab(tab);
     }
 
