@@ -7,10 +7,12 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.openwhisper.android.R;
 import com.openwhisper.android.databinding.ItemDateHeaderBinding;
 import com.openwhisper.android.databinding.ItemMessageReceivedBinding;
 import com.openwhisper.android.databinding.ItemMessageSentBinding;
@@ -203,6 +205,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     }
                     activeDownloads.add(item.attachmentUrl);
                     setDownloadLoading(attachmentDownload, attachmentDownloadProgress, true);
+                    Toast.makeText(v.getContext(), R.string.download_started, Toast.LENGTH_SHORT).show();
                     AttachmentDownloader.download(
                             v.getContext(),
                             okHttpClient,

@@ -1,5 +1,6 @@
 package com.openwhisper.android.ui.rooms;
 
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -94,7 +95,7 @@ public final class RoomsAdapter extends RecyclerView.Adapter<RoomsAdapter.VH> {
             binding.title.setText(title);
             CharSequence subtitle = chat.getMemberSubtitleStyled(youLabel);
             binding.subtitle.setText(subtitle);
-            binding.subtitle.setVisibility(subtitle.length() == 0 ? android.view.View.GONE : android.view.View.VISIBLE);
+            binding.subtitle.setVisibility(TextUtils.isEmpty(subtitle) ? android.view.View.GONE : android.view.View.VISIBLE);
             AvatarText.apply(binding.avatar, title);
             binding.roomContent.setOnClickListener(v -> listener.onChatClicked(chat));
         }

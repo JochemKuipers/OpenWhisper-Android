@@ -11,18 +11,22 @@ public final class MockApiDispatcher extends Dispatcher {
 
     public int loginStatusCode = 200;
     public String loginBody = TestFixtures.tokenResponseJson();
-    public String meBody = TestFixtures.userMeJson();
-    public String chatsBody = TestFixtures.chatsListJson();
-    public String friendRequestsBody = TestFixtures.friendRequestsJson();
-    public String friendsBody = TestFixtures.friendsListJson();
+    public final String meBody = TestFixtures.USER_ME_JSON;
+    public final String chatsBody = TestFixtures.chatsListJson();
+    public final String friendRequestsBody = TestFixtures.FRIEND_REQUESTS_JSON;
+    public final String friendsBody = TestFixtures.FRIENDS_LIST_JSON;
 
     @NonNull
     @Override
     public MockResponse dispatch(@NonNull RecordedRequest request) {
-        String path = request.getPath();
-        String method = request.getMethod();
+        final String path = request.getPath();
+        final String method = request.getMethod();
         if (path == null || method == null) {
             return notFound();
+        }
+
+        if (path.contains("/health/") && "GET".equals(method)) {
+            return json(200, "{\"status\":\"ok\"}");
         }
 
         if (path.contains("/token/refresh")) {

@@ -71,12 +71,14 @@ flowchart TB
   ChatActivity --> WS
 ```
 
-| Layer | Responsibility |
-|-------|----------------|
-| **UI** (`ui/`) | Activities, fragments, adapters, view binding |
-| **Data** (`data/`) | Retrofit API, OkHttp auth, token storage, WebSocket managers |
-| **Model** (`model/`) | Gson DTOs matching the server API |
-| **Util** (`util/`) | Attachments, timestamps, error messages, theming |
+### Layers
+
+| Layer                | Responsibility                                               |
+|----------------------|--------------------------------------------------------------|
+| **UI** (`ui/`)       | Activities, fragments, adapters, view binding                |
+| **Data** (`data/`)   | Retrofit API, OkHttp auth, token storage, WebSocket managers |
+| **Model** (`model/`) | Gson DTOs matching the server API                            |
+| **Util** (`util/`)   | Attachments, timestamps, error messages, theming             |
 
 `OpenWhisperApp` wires `SettingsStore`, `NetworkModule`, and `SocialWebSocketManager` at startup. Chat titles and member subtitles come from server fields `display_title` and `member_subtitle`.
 
@@ -104,7 +106,7 @@ Fast tests for models, utilities, and data-layer logic. JSON fixtures live in `a
 ./gradlew testDebugUnitTest
 ```
 
-Robolectric is pinned to SDK 35 via `app/src/test/resources/robolectric.properties` because `compileSdk` is 37.
+Robolectric tests pin SDK 35 via `@Config(sdk = 35)` because `compileSdk` is 37.
 
 ### Instrumented tests (Espresso)
 
@@ -157,12 +159,12 @@ Releases are published to **GitHub Releases** when you push a version tag (`v1.0
 
 3. **GitHub Actions secrets** — in the repo go to **Settings → Secrets and variables → Actions** and add:
 
-   | Secret | Value |
-   |--------|--------|
-   | `ANDROID_KEYSTORE_BASE64` | Base64-encoded `.jks` file |
-   | `ANDROID_KEYSTORE_PASSWORD` | Keystore password |
-   | `ANDROID_KEY_ALIAS` | Key alias (e.g. `openwhisper`) |
-   | `ANDROID_KEY_PASSWORD` | Key password |
+| Secret                      | Value                          |
+|-----------------------------|--------------------------------|
+| `ANDROID_KEYSTORE_BASE64`   | Base64-encoded `.jks` file     |
+| `ANDROID_KEYSTORE_PASSWORD` | Keystore password              |
+| `ANDROID_KEY_ALIAS`         | Key alias (e.g. `openwhisper`) |
+| `ANDROID_KEY_PASSWORD`      | Key password                   |
 
    Encode the keystore (PowerShell):
 

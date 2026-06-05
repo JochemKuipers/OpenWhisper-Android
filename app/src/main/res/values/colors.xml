@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="ow_primary">#2573F5</color>
-    <color name="ow_primary_dark">#1A5FD4</color>
     <color name="ow_primary_container">#DBEAFE</color>
     <color name="ow_on_primary">#FFFFFF</color>
     <color name="ow_background">#FFFFFF</color>
     <color name="ow_surface">#F3F4F6</color>
-    <color name="ow_search_bg">#EBF3FF</color>
     <color name="ow_sent_bubble">#2573F5</color>
     <color name="ow_received_bubble">#E5E7EB</color>
     <color name="ow_text_primary">#111827</color>

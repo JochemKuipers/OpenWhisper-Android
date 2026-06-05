@@ -7,13 +7,16 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 import okhttp3.HttpUrl;
 
 @RunWith(RobolectricTestRunner.class)
+@Config(sdk = 35)
 public class AttachmentUtilsTest {
 
     @Test
@@ -38,7 +41,7 @@ public class AttachmentUtilsTest {
 
     @Test
     public void resolveUrl_handlesRelativeMediaPaths() {
-        HttpUrl siteRoot = HttpUrl.parse("https://example.com/");
+        HttpUrl siteRoot = Objects.requireNonNull(HttpUrl.parse("https://example.com/"));
         assertEquals(
                 "https://example.com/media/a.jpg",
                 AttachmentUtils.resolveUrl(siteRoot, "/media/a.jpg"));

@@ -1,3 +1,9 @@
 {
-    "java.configuration.updateBuildConfiguration": "interactive"
+    "java.configuration.updateBuildConfiguration": "interactive",
+    "json.schemas": [
+        {
+            "fileMatch": ["**/fixtures/messages.json"],
+            "url": "./app/src/test/resources/fixtures/messages.schema.json"
+        }
+    ]
 }

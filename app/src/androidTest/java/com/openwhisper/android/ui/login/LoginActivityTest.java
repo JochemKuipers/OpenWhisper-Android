@@ -50,7 +50,7 @@ public class LoginActivityTest extends InstrumentedTestBase {
     @Test
     public void failedLogin_staysOnLoginScreen() {
         dispatcher.loginStatusCode = 401;
-        dispatcher.loginBody = TestFixtures.loginErrorJson();
+        dispatcher.loginBody = TestFixtures.LOGIN_ERROR_JSON;
 
         onView(withId(R.id.username)).perform(typeText("alice"), closeSoftKeyboard());
         onView(withId(R.id.password)).perform(typeText("wrong"), closeSoftKeyboard());

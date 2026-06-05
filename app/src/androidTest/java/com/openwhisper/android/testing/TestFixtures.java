@@ -7,20 +7,25 @@ public final class TestFixtures {
             "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIn0.test";
     public static final String REFRESH_TOKEN = "refresh-token-value";
 
+    public static final String USER_ME_JSON = "{\"username\":\"alice\"}";
+
+    public static final String FRIEND_REQUESTS_JSON =
+            "{\"incoming\":[{\"username\":\"eve\"}],\"outgoing\":[{\"username\":\"frank\"}]}";
+
+    public static final String FRIENDS_LIST_JSON = "[{\"username\":\"bob\"}]";
+
+    public static final String LOGIN_ERROR_JSON = "{\"detail\":\"Invalid credentials\"}";
+
     private TestFixtures() {}
 
     public static String tokenResponseJson() {
         return "{\"access\":\"" + ACCESS_TOKEN + "\",\"refresh\":\"" + REFRESH_TOKEN + "\"}";
     }
 
-    public static String userMeJson() {
-        return "{\"username\":\"alice\"}";
-    }
-
     public static String chatsListJson() {
         return "["
                 + "{"
-                + "\"url\":\"http://example.com/api/chats/1/\","
+                + "\"url\":\"https://example.com/api/chats/1/\","
                 + "\"title\":\"\","
                 + "\"display_title\":\"bob\","
                 + "\"member_subtitle\":\"\","
@@ -29,7 +34,7 @@ public final class TestFixtures {
                 + "\"is_admin\":true"
                 + "},"
                 + "{"
-                + "\"url\":\"http://example.com/api/chats/2/\","
+                + "\"url\":\"https://example.com/api/chats/2/\","
                 + "\"title\":\"\","
                 + "\"display_title\":\"New group chat\","
                 + "\"member_subtitle\":\"You, bob, carol\","
@@ -38,17 +43,5 @@ public final class TestFixtures {
                 + "\"is_admin\":true"
                 + "}"
                 + "]";
-    }
-
-    public static String friendRequestsJson() {
-        return "{\"incoming\":[{\"username\":\"eve\"}],\"outgoing\":[{\"username\":\"frank\"}]}";
-    }
-
-    public static String friendsListJson() {
-        return "[{\"username\":\"bob\"}]";
-    }
-
-    public static String loginErrorJson() {
-        return "{\"detail\":\"Invalid credentials\"}";
     }
 }

@@ -1,6 +1,7 @@
 package com.openwhisper.android.data;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import android.content.Context;
@@ -11,6 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
 import java.util.concurrent.TimeUnit;
 
@@ -21,6 +23,7 @@ import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
 
 @RunWith(RobolectricTestRunner.class)
+@Config(sdk = 35)
 public class AuthInterceptorTest {
 
     private MockWebServer server;
@@ -48,6 +51,7 @@ public class AuthInterceptorTest {
         client.newCall(new Request.Builder().url(server.url("/test")).build()).execute().close();
 
         RecordedRequest request = server.takeRequest(1, TimeUnit.SECONDS);
+        assertNotNull(request);
         assertEquals("Bearer access-123", request.getHeader("Authorization"));
     }
 
@@ -65,6 +69,7 @@ public class AuthInterceptorTest {
         client.newCall(new Request.Builder().url(server.url("/test")).build()).execute().close();
 
         RecordedRequest request = server.takeRequest(1, TimeUnit.SECONDS);
+        assertNotNull(request);
         assertNull(request.getHeader("Authorization"));
     }
 }

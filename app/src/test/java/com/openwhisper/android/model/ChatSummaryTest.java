@@ -10,19 +10,22 @@ import com.google.gson.Gson;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 @RunWith(RobolectricTestRunner.class)
+@Config(sdk = 35)
 public class ChatSummaryTest {
 
     private final Gson gson = new Gson();
 
     @Test
     public void deserializesDisplayFieldsFromFixture() throws Exception {
-        ChatSummary chat = loadFixture("fixtures/chat_dm.json", ChatSummary.class);
+        ChatSummary chat = loadFixture("fixtures/chat_dm.json");
         assertEquals("bob", chat.displayTitle);
         assertEquals("", chat.memberSubtitle);
         assertEquals("bob", chat.getDisplayTitle());
@@ -30,7 +33,7 @@ public class ChatSummaryTest {
 
     @Test
     public void groupFixture_hasMemberSubtitle() throws Exception {
-        ChatSummary chat = loadFixture("fixtures/chat_group.json", ChatSummary.class);
+        ChatSummary chat = loadFixture("fixtures/chat_group.json");
         assertEquals("New group chat", chat.getDisplayTitle());
         assertEquals("You, bob, carol", chat.getMemberSubtitle());
     }
@@ -55,16 +58,15 @@ public class ChatSummaryTest {
     @Test
     public void chatId_parsedFromUrl() {
         ChatSummary chat = new ChatSummary();
-        chat.url = "http://example.com/api/chats/42/";
+        chat.url = "https://example.com/api/chats/42/";
         assertEquals(42, chat.chatId());
     }
 
-    private <T> T loadFixture(String path, Class<T> type) throws Exception {
-        try (InputStreamReader reader =
-                new InputStreamReader(
-                        Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream(path)),
-                        StandardCharsets.UTF_8)) {
-            return gson.fromJson(reader, type);
+    private ChatSummary loadFixture(String path) throws Exception {
+        try (InputStream stream =
+                        Objects.requireNonNull(Objects.requireNonNull(getClass().getClassLoader()).getResourceAsStream(path));
+             InputStreamReader reader = new InputStreamReader(stream, StandardCharsets.UTF_8)) {
+            return gson.fromJson(reader, ChatSummary.class);
         }
     }
 }

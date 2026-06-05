@@ -1,6 +1,5 @@
 package com.openwhisper.android.data;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import android.content.Context;
@@ -11,8 +10,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
 @RunWith(RobolectricTestRunner.class)
+@Config(sdk = 35)
 public class NetworkModuleTest {
 
     private NetworkModule network;
@@ -46,6 +47,6 @@ public class NetworkModuleTest {
     @Test
     public void resolveAttachmentUrl_resolvesRelativeMediaPath() {
         String resolved = network.apiConfig().resolveAttachmentUrl("/media/file.jpg");
-        assertEquals(true, resolved.contains("/media/file.jpg"));
+        assertTrue(resolved.contains("/media/file.jpg"));
     }
 }

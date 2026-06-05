@@ -56,7 +56,7 @@ public abstract class InstrumentedTestBase {
     }
 
     protected static OpenWhisperApp app() {
-        return (OpenWhisperApp) ApplicationProvider.getApplicationContext();
+        return ApplicationProvider.getApplicationContext();
     }
 
     protected void seedAuthenticatedSession() {
