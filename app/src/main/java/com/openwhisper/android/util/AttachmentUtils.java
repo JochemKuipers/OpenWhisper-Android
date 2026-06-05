@@ -3,6 +3,7 @@ package com.openwhisper.android.util;
 import android.webkit.MimeTypeMap;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -50,13 +51,36 @@ public final class AttachmentUtils {
 
     public static String guessMimeType(String fileName) {
         String ext = MimeTypeMap.getFileExtensionFromUrl(fileName);
-        if (ext != null) {
-            String mime = MimeTypeMap.getSingleton().getMimeTypeFromExtension(ext.toLowerCase(Locale.ROOT));
+        if (ext == null || ext.isEmpty()) {
+            int dot = fileName.lastIndexOf('.');
+            if (dot >= 0 && dot < fileName.length() - 1) {
+                ext = fileName.substring(dot + 1);
+            }
+        }
+        if (ext != null && !ext.isEmpty()) {
+            String mime = mimeFromExtension(ext);
             if (mime != null) {
                 return mime;
             }
         }
         return "application/octet-stream";
+    }
+
+    @Nullable
+    private static String mimeFromExtension(String ext) {
+        String lower = ext.toLowerCase(Locale.ROOT);
+        String mime = MimeTypeMap.getSingleton().getMimeTypeFromExtension(lower);
+        if (mime != null) {
+            return mime;
+        }
+        return switch (lower) {
+            case "png" -> "image/png";
+            case "jpg", "jpeg" -> "image/jpeg";
+            case "gif" -> "image/gif";
+            case "webp" -> "image/webp";
+            case "pdf" -> "application/pdf";
+            default -> null;
+        };
     }
 
     /** Resolves relative {@code /media/...} paths to absolute download URLs. */

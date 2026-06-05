@@ -1,0 +1,12 @@
+{
+  "url": "http://example.com/api/chats/1/",
+  "title": "",
+  "display_title": "bob",
+  "member_subtitle": "",
+  "users": [
+    {"username": "alice"},
+    {"username": "bob"}
+  ],
+  "admin_username": "alice",
+  "is_admin": true
+}

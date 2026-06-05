@@ -1,0 +1,13 @@
+{
+  "url": "http://example.com/api/chats/2/",
+  "title": "",
+  "display_title": "New group chat",
+  "member_subtitle": "You, bob, carol",
+  "users": [
+    {"username": "alice"},
+    {"username": "bob"},
+    {"username": "carol"}
+  ],
+  "admin_username": "alice",
+  "is_admin": true
+}
