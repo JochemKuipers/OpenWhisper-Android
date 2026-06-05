@@ -20,4 +20,7 @@ public final class WsChatEvent {
 
     @SerializedName("attachment_url")
     public String attachmentUrl;
+
+    @SerializedName("created_at")
+    public String createdAt;
 }

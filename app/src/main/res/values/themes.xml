@@ -4,5 +4,10 @@
         <item name="colorPrimary">@color/ow_primary</item>
         <item name="colorPrimaryContainer">@color/ow_primary_container</item>
         <item name="colorOnPrimary">@color/ow_on_primary</item>
+        <item name="android:colorBackground">@color/ow_background</item>
+        <item name="colorSurface">@color/ow_background</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 </resources>

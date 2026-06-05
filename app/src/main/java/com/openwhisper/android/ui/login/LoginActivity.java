@@ -6,8 +6,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
+import com.openwhisper.android.ui.base.BaseActivity;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.openwhisper.android.OpenWhisperApp;
@@ -19,14 +18,14 @@ import com.openwhisper.android.model.LoginRequest;
 import com.openwhisper.android.model.TokenResponse;
 import com.openwhisper.android.model.UserProfile;
 import com.openwhisper.android.ui.register.RegisterActivity;
-import com.openwhisper.android.ui.rooms.RoomsActivity;
+import com.openwhisper.android.ui.main.MainActivity;
 import com.openwhisper.android.util.ApiErrors;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends BaseActivity {
 
     private ActivityLoginBinding binding;
     private NetworkModule network;
@@ -34,12 +33,15 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setupEdgeToEdge();
         binding = ActivityLoginBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        int contentPadding = (int) (24 * getResources().getDisplayMetrics().density);
+        applyRootSystemBarPadding(binding.getRoot(), contentPadding);
 
         network = ((OpenWhisperApp) getApplication()).network();
         if (network.tokenStore().hasAccess()) {
-            startActivity(new Intent(this, RoomsActivity.class));
+            startActivity(new Intent(this, MainActivity.class));
             finish();
             return;
         }
@@ -122,7 +124,8 @@ public class LoginActivity extends AppCompatActivity {
                                 }
                                 UserProfile p = response.body();
                                 UserSession.setUsername(p.username);
-                                startActivity(new Intent(LoginActivity.this, RoomsActivity.class));
+                                network.tokenStore().saveUsername(p.username);
+                                startActivity(new Intent(LoginActivity.this, MainActivity.class));
                                 finish();
                             }
 

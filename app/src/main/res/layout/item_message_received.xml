@@ -3,21 +3,38 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:paddingVertical="4dp">
+    android:paddingStart="4dp"
+    android:paddingTop="4dp"
+    android:paddingEnd="48dp"
+    android:paddingBottom="4dp">
 
     <TextView
         android:id="@+id/sender"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
         android:textAppearance="?attr/textAppearanceLabelSmall"
-        android:textColor="?android:attr/textColorSecondary" />
+        android:textColor="@color/ow_text_secondary"
+        android:visibility="gone" />
 
     <TextView
         android:id="@+id/bubble"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="2dp"
-        android:background="@color/ow_received_bubble"
-        android:padding="12dp"
-        android:textAppearance="?attr/textAppearanceBodyLarge" />
+        android:background="@drawable/bg_bubble_received"
+        android:maxWidth="260dp"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="12dp"
+        android:textAppearance="?attr/textAppearanceBodyMedium"
+        android:textColor="@color/ow_text_primary" />
+
+    <TextView
+        android:id="@+id/timestamp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="4dp"
+        android:textAppearance="?attr/textAppearanceLabelSmall"
+        android:textColor="@color/ow_text_secondary"
+        android:textSize="11sp" />
 </LinearLayout>

@@ -5,8 +5,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
+import com.openwhisper.android.ui.base.BaseActivity;
 import com.openwhisper.android.OpenWhisperApp;
 import com.openwhisper.android.R;
 import com.openwhisper.android.data.NetworkModule;
@@ -19,7 +18,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class RegisterActivity extends AppCompatActivity {
+public class RegisterActivity extends BaseActivity {
 
     private ActivityRegisterBinding binding;
     private NetworkModule network;
@@ -27,8 +26,11 @@ public class RegisterActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setupEdgeToEdge();
         binding = ActivityRegisterBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        int contentPadding = (int) (24 * getResources().getDisplayMetrics().density);
+        applyRootSystemBarPadding(binding.getRoot(), contentPadding);
 
         network = ((OpenWhisperApp) getApplication()).network();
 

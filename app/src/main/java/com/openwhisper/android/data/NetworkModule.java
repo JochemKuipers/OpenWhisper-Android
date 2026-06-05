@@ -60,7 +60,7 @@ public final class NetworkModule {
     }
 
     /** Builds {@code ws://host/ws/chats/{id}/?token=...} from the HTTP API base URL. */
-    public HttpUrl webSocketUrl(int chatId) {
+    public String webSocketUrl(int chatId) {
         HttpUrl api = HttpUrl.parse(BuildConfig.API_BASE_URL);
         if (api == null) {
             throw new IllegalStateException("Invalid API_BASE_URL");
@@ -69,12 +69,19 @@ public final class NetworkModule {
         if (siteRoot == null) {
             throw new IllegalStateException("Invalid API_BASE_URL");
         }
-        String wsScheme = "https".equalsIgnoreCase(siteRoot.scheme()) ? "wss" : "ws";
         String token = tokenStore.getAccessToken();
-        return siteRoot.newBuilder()
-                .scheme(wsScheme)
-                .encodedPath("/ws/chats/" + chatId + "/")
-                .addQueryParameter("token", token != null ? token : "")
-                .build();
+        HttpUrl httpUrl =
+                siteRoot.newBuilder()
+                        .encodedPath("/ws/chats/" + chatId + "/")
+                        .addQueryParameter("token", token != null ? token : "")
+                        .build();
+        String url = httpUrl.toString();
+        if (url.startsWith("https://")) {
+            return "wss://" + url.substring(8);
+        }
+        if (url.startsWith("http://")) {
+            return "ws://" + url.substring(7);
+        }
+        return url;
     }
 }

@@ -1,28 +1,32 @@
 package com.openwhisper.android.ui.chat;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.openwhisper.android.OpenWhisperApp;
 import com.openwhisper.android.R;
+import com.openwhisper.android.ui.base.BaseActivity;
 import com.openwhisper.android.data.NetworkModule;
 import com.openwhisper.android.data.UserSession;
 import com.openwhisper.android.databinding.ActivityChatBinding;
 import com.openwhisper.android.model.ApiMessage;
 import com.openwhisper.android.model.SendMessageBody;
 import com.openwhisper.android.model.WsChatEvent;
-import com.openwhisper.android.ui.rooms.RoomsActivity;
+import com.openwhisper.android.ui.main.MainActivity;
 import com.openwhisper.android.util.ApiErrors;
+import com.openwhisper.android.util.MessageTimestamps;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -36,7 +40,7 @@ import okio.ByteString;
 import retrofit2.Call;
 import retrofit2.Callback;
 
-public class ChatActivity extends AppCompatActivity {
+public class ChatActivity extends BaseActivity {
 
     private ActivityChatBinding binding;
     private NetworkModule network;
@@ -49,12 +53,15 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setupEdgeToEdge();
         binding = ActivityChatBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        applyImeOnlyPadding(binding.inputBar);
+        applyBottomNavInsets(binding.bottomNav);
 
         network = ((OpenWhisperApp) getApplication()).network();
-        chatId = getIntent().getIntExtra(RoomsActivity.EXTRA_CHAT_ID, -1);
-        chatTitle = getIntent().getStringExtra(RoomsActivity.EXTRA_CHAT_TITLE);
+        chatId = getIntent().getIntExtra(MainActivity.EXTRA_CHAT_ID, -1);
+        chatTitle = getIntent().getStringExtra(MainActivity.EXTRA_CHAT_TITLE);
         if (chatTitle == null) {
             chatTitle = getString(R.string.chats);
         }
@@ -72,6 +79,9 @@ public class ChatActivity extends AppCompatActivity {
         }
         binding.toolbar.setNavigationOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
 
+        binding.bottomNav.setSelectedItemId(R.id.nav_chats);
+        binding.bottomNav.setOnItemSelectedListener(this::onBottomNavSelected);
+
         adapter = new ChatAdapter();
         LinearLayoutManager llm = new LinearLayoutManager(this);
         llm.setStackFromEnd(true);
@@ -81,6 +91,22 @@ public class ChatActivity extends AppCompatActivity {
         binding.sendButton.setOnClickListener(v -> sendMessage());
 
         loadHistory();
+    }
+
+    private boolean onBottomNavSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.nav_chats) {
+            finish();
+            return true;
+        }
+        if (item.getItemId() == R.id.nav_contacts) {
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.putExtra(MainActivity.EXTRA_TAB, MainActivity.TAB_CONTACTS);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(intent);
+            finish();
+            return true;
+        }
+        return false;
     }
 
     private void loadHistory() {
@@ -125,7 +151,13 @@ public class ChatActivity extends AppCompatActivity {
         if (body.isEmpty() && !TextUtils.isEmpty(m.attachmentUrl)) {
             body = "[Attachment]";
         }
-        return new ChatListItem(m.messageId(), mine, m.senderUsername(), body);
+        return new ChatListItem(
+                m.messageId(),
+                mine,
+                m.senderUsername(),
+                body,
+                MessageTimestamps.format(m.createdAt),
+                m.createdAt);
     }
 
     private void mapWsToUi(WsChatEvent ev) {
@@ -144,7 +176,15 @@ public class ChatActivity extends AppCompatActivity {
         if (body.isEmpty() && !TextUtils.isEmpty(ev.attachmentUrl)) {
             body = "[Attachment]";
         }
-        ChatListItem item = new ChatListItem(ev.messageId, mine, ev.senderUsername, body);
+        String createdAtIso = ev.createdAt != null && !ev.createdAt.isBlank()
+                ? ev.createdAt
+                : Instant.now().toString();
+        String timestamp = MessageTimestamps.format(createdAtIso);
+        if (timestamp.isEmpty()) {
+            timestamp = MessageTimestamps.formatNow();
+        }
+        ChatListItem item =
+                new ChatListItem(ev.messageId, mine, ev.senderUsername, body, timestamp, createdAtIso);
         mainHandler.post(
                 () -> {
                     adapter.append(item);

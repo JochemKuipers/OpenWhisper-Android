@@ -1,8 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="ow_primary">#1565C0</color>
-    <color name="ow_primary_container">#BBDEFB</color>
+    <color name="ow_primary">#2573F5</color>
+    <color name="ow_primary_dark">#1A5FD4</color>
+    <color name="ow_primary_container">#DBEAFE</color>
     <color name="ow_on_primary">#FFFFFF</color>
-    <color name="ow_sent_bubble">#E3F2FD</color>
-    <color name="ow_received_bubble">#F5F5F5</color>
+    <color name="ow_background">#FFFFFF</color>
+    <color name="ow_surface">#F3F4F6</color>
+    <color name="ow_search_bg">#EBF3FF</color>
+    <color name="ow_sent_bubble">#2573F5</color>
+    <color name="ow_received_bubble">#E5E7EB</color>
+    <color name="ow_text_primary">#111827</color>
+    <color name="ow_text_secondary">#6B7280</color>
+    <color name="ow_divider">#E5E7EB</color>
+    <color name="ow_input_bg">#FFFFFF</color>
+    <color name="ow_input_stroke">#E5E7EB</color>
+    <array name="ow_avatar_colors">
+        <item>#2573F5</item>
+        <item>#7C3AED</item>
+        <item>#059669</item>
+        <item>#D97706</item>
+        <item>#DB2777</item>
+        <item>#0891B2</item>
+    </array>
 </resources>

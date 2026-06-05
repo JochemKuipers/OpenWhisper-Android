@@ -13,6 +13,7 @@ public final class TokenStore {
     private static final String PREFS = "openwhisper_auth";
     private static final String KEY_ACCESS = "access_token";
     private static final String KEY_REFRESH = "refresh_token";
+    private static final String KEY_USERNAME = "username";
 
     private final SharedPreferences prefs;
 
@@ -28,6 +29,19 @@ public final class TokenStore {
         prefs.edit().putString(KEY_ACCESS, access).apply();
     }
 
+    public void saveUsername(@Nullable String username) {
+        if (username == null || username.isEmpty()) {
+            prefs.edit().remove(KEY_USERNAME).apply();
+        } else {
+            prefs.edit().putString(KEY_USERNAME, username).apply();
+        }
+    }
+
+    @Nullable
+    public String getUsername() {
+        return prefs.getString(KEY_USERNAME, null);
+    }
+
     @Nullable
     public String getAccessToken() {
         return prefs.getString(KEY_ACCESS, null);
@@ -39,7 +53,7 @@ public final class TokenStore {
     }
 
     public void clear() {
-        prefs.edit().remove(KEY_ACCESS).remove(KEY_REFRESH).apply();
+        prefs.edit().remove(KEY_ACCESS).remove(KEY_REFRESH).remove(KEY_USERNAME).apply();
     }
 
     public boolean hasAccess() {

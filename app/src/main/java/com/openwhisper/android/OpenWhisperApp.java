@@ -3,6 +3,7 @@ package com.openwhisper.android;
 import android.app.Application;
 
 import com.openwhisper.android.data.NetworkModule;
+import com.openwhisper.android.data.UserSession;
 
 public class OpenWhisperApp extends Application {
 
@@ -12,6 +13,10 @@ public class OpenWhisperApp extends Application {
     public void onCreate() {
         super.onCreate();
         networkModule = new NetworkModule(this);
+        String username = networkModule.tokenStore().getUsername();
+        if (username != null) {
+            UserSession.setUsername(username);
+        }
     }
 
     public NetworkModule network() {
