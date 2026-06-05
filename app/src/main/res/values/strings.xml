@@ -61,6 +61,9 @@
     <string name="attach_file">Attach file</string>
     <string name="attachment_too_large">Attachment too large (max 10 MB).</string>
     <string name="open_attachment">Open attachment</string>
+    <string name="download_attachment">Download attachment</string>
+    <string name="download_started">Downloading…</string>
+    <string name="download_complete">Saved to Downloads: %1$s</string>
     <string name="no_app_to_open_attachment">No app found to open this file.</string>
     <string name="password_mismatch">Passwords do not match.</string>
 </resources>

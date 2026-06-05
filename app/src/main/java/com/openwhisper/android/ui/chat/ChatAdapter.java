@@ -3,7 +3,9 @@ package com.openwhisper.android.ui.chat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -12,11 +14,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.openwhisper.android.databinding.ItemDateHeaderBinding;
 import com.openwhisper.android.databinding.ItemMessageReceivedBinding;
 import com.openwhisper.android.databinding.ItemMessageSentBinding;
+import com.openwhisper.android.util.AttachmentDownloader;
 import com.openwhisper.android.util.AttachmentOpener;
 import com.openwhisper.android.util.MessageTimestamps;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import coil.ImageLoader;
 import coil.request.ImageRequest;
@@ -33,6 +38,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private final HttpUrl attachmentSiteRoot;
     private final ImageLoader imageLoader;
     private final List<ChatListItem> items = new ArrayList<>();
+    private final Set<String> activeDownloads = new HashSet<>();
 
     public ChatAdapter(OkHttpClient okHttpClient, HttpUrl attachmentSiteRoot) {
         this.okHttpClient = okHttpClient;
@@ -163,12 +169,17 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private void bindMessageContent(
             View root,
             TextView bubble,
+            View attachmentContainer,
             ImageView attachmentImage,
             TextView attachmentFile,
-            ChatListItem item) {
+            ImageButton attachmentDownload,
+            ProgressBar attachmentDownloadProgress,
+            ChatListItem item,
+            int position) {
         bindTimestamp(root.findViewById(com.openwhisper.android.R.id.timestamp), item.timestamp);
 
         if (!item.hasAttachment()) {
+            attachmentContainer.setVisibility(View.GONE);
             attachmentImage.setVisibility(View.GONE);
             attachmentFile.setVisibility(View.GONE);
             if (item.text.isEmpty()) {
@@ -179,6 +190,31 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             }
             return;
         }
+
+        attachmentContainer.setVisibility(View.VISIBLE);
+        setDownloadLoading(
+                attachmentDownload,
+                attachmentDownloadProgress,
+                activeDownloads.contains(item.attachmentUrl));
+        attachmentDownload.setOnClickListener(
+                v -> {
+                    if (activeDownloads.contains(item.attachmentUrl)) {
+                        return;
+                    }
+                    activeDownloads.add(item.attachmentUrl);
+                    setDownloadLoading(attachmentDownload, attachmentDownloadProgress, true);
+                    AttachmentDownloader.download(
+                            v.getContext(),
+                            okHttpClient,
+                            attachmentSiteRoot,
+                            item.attachmentUrl,
+                            () -> {
+                                activeDownloads.remove(item.attachmentUrl);
+                                if (position != RecyclerView.NO_POSITION) {
+                                    notifyItemChanged(position);
+                                }
+                            });
+                });
 
         if (item.attachmentKind == ChatListItem.AttachmentKind.IMAGE) {
             attachmentImage.setVisibility(View.VISIBLE);
@@ -218,6 +254,13 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
     }
 
+    private static void setDownloadLoading(
+            ImageButton downloadButton, ProgressBar progressBar, boolean loading) {
+        downloadButton.setEnabled(!loading);
+        downloadButton.setVisibility(loading ? View.INVISIBLE : View.VISIBLE);
+        progressBar.setVisibility(loading ? View.VISIBLE : View.GONE);
+    }
+
     static final class DateVH extends RecyclerView.ViewHolder {
         private final ItemDateHeaderBinding binding;
 
@@ -243,9 +286,13 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             bindMessageContent(
                     binding.getRoot(),
                     binding.bubble,
+                    binding.attachmentContainer,
                     binding.attachmentImage,
                     binding.attachmentFile,
-                    item);
+                    binding.attachmentDownload,
+                    binding.attachmentDownloadProgress,
+                    item,
+                    getBindingAdapterPosition());
         }
     }
 
@@ -261,9 +308,13 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             bindMessageContent(
                     binding.getRoot(),
                     binding.bubble,
+                    binding.attachmentContainer,
                     binding.attachmentImage,
                     binding.attachmentFile,
-                    item);
+                    binding.attachmentDownload,
+                    binding.attachmentDownloadProgress,
+                    item,
+                    getBindingAdapterPosition());
         }
     }
 

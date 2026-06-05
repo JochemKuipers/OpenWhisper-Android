@@ -2,6 +2,8 @@ package com.openwhisper.android.util;
 
 import android.webkit.MimeTypeMap;
 
+import androidx.annotation.NonNull;
+
 import java.util.Locale;
 
 public final class AttachmentUtils {
@@ -52,5 +54,17 @@ public final class AttachmentUtils {
             }
         }
         return "application/octet-stream";
+    }
+
+    /** Resolves relative {@code /media/...} paths to absolute download URLs. */
+    public static String resolveUrl(@NonNull okhttp3.HttpUrl siteRoot, @NonNull String url) {
+        if (url.isBlank()) {
+            return "";
+        }
+        if (url.contains("://")) {
+            return url;
+        }
+        okhttp3.HttpUrl resolved = siteRoot.resolve(url);
+        return resolved != null ? resolved.toString() : url;
     }
 }

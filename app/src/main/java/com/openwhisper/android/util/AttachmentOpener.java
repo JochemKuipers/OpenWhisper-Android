@@ -16,6 +16,8 @@ import androidx.core.content.FileProvider;
 
 import com.openwhisper.android.R;
 
+import com.openwhisper.android.util.AttachmentUtils;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -35,7 +37,7 @@ public final class AttachmentOpener {
             @NonNull OkHttpClient client,
             @NonNull HttpUrl siteRoot,
             @NonNull String url) {
-        String resolved = resolveUrl(siteRoot, url);
+        String resolved = AttachmentUtils.resolveUrl(siteRoot, url);
         if (resolved.isEmpty()) {
             showError(context, R.string.error_generic);
             return;
@@ -77,17 +79,6 @@ public final class AttachmentOpener {
                             }
                         })
                 .start();
-    }
-
-    static String resolveUrl(@NonNull HttpUrl siteRoot, @NonNull String url) {
-        if (url.isBlank()) {
-            return "";
-        }
-        if (url.contains("://")) {
-            return url;
-        }
-        HttpUrl resolved = siteRoot.resolve(url);
-        return resolved != null ? resolved.toString() : url;
     }
 
     private static String mimeTypeFromResponse(@NonNull Response response, @NonNull String fileName) {
