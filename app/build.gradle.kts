@@ -62,4 +62,5 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:5.3.2")
     implementation("com.google.code.gson:gson:2.14.0")
     implementation("com.auth0:java-jwt:4.5.2")
+    implementation("io.coil-kt:coil:2.7.0")
 }

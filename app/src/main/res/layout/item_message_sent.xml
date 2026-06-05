@@ -9,16 +9,41 @@
     android:paddingEnd="4dp"
     android:paddingBottom="4dp">
 
-    <TextView
-        android:id="@+id/bubble"
+    <LinearLayout
+        android:id="@+id/bubbleContainer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/bg_bubble_sent"
         android:maxWidth="260dp"
-        android:paddingHorizontal="16dp"
-        android:paddingVertical="12dp"
-        android:textAppearance="?attr/textAppearanceBodyMedium"
-        android:textColor="@color/ow_on_primary" />
+        android:orientation="vertical"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="10dp">
+
+        <ImageView
+            android:id="@+id/attachmentImage"
+            android:layout_width="220dp"
+            android:layout_height="160dp"
+            android:layout_marginBottom="6dp"
+            android:contentDescription="@string/open_attachment"
+            android:scaleType="centerCrop"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/attachmentFile"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="6dp"
+            android:textColor="@color/ow_on_primary"
+            android:textStyle="bold"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/bubble"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            android:textColor="@color/ow_on_primary" />
+    </LinearLayout>
 
     <TextView
         android:id="@+id/timestamp"

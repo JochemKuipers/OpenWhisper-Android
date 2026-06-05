@@ -14,7 +14,9 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.openwhisper.android.OpenWhisperApp;
 import com.openwhisper.android.R;
+import com.openwhisper.android.data.SocialWebSocketManager;
 import com.openwhisper.android.databinding.FragmentChatsBinding;
 import com.openwhisper.android.model.ChatSummary;
 import com.openwhisper.android.ui.chat.ChatActivity;
@@ -72,6 +74,29 @@ public class ChatsFragment extends Fragment implements RoomsAdapter.Listener {
                     public void afterTextChanged(Editable s) {}
                 });
 
+    }
+
+    private SocialWebSocketManager.Listener socialListener;
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        socialListener =
+                event -> {
+                    if ("chat_updated".equals(event.type)) {
+                        loadChats();
+                    }
+                };
+        ((OpenWhisperApp) requireActivity().getApplication()).socialWebSocket().addListener(socialListener);
+    }
+
+    @Override
+    public void onStop() {
+        if (socialListener != null) {
+            ((OpenWhisperApp) requireActivity().getApplication()).socialWebSocket().removeListener(socialListener);
+            socialListener = null;
+        }
+        super.onStop();
     }
 
     @Override

@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.openwhisper.android.OpenWhisperApp;
+import com.openwhisper.android.OpenWhisperApp;
 import com.openwhisper.android.R;
 import com.openwhisper.android.data.NetworkModule;
 import com.openwhisper.android.data.UserSession;
@@ -37,7 +38,7 @@ public class MainActivity extends BaseActivity implements MainHost {
     private ActivityMainBinding binding;
     private NetworkModule network;
     private ChatsFragment chatsFragment;
-    private ContactsFragment contactsFragment;
+    private FriendsFragment friendsFragment;
     private SettingsFragment settingsFragment;
     private String currentTab = TAB_CHATS;
 
@@ -61,18 +62,18 @@ public class MainActivity extends BaseActivity implements MainHost {
 
         if (savedInstanceState == null) {
             chatsFragment = new ChatsFragment();
-            contactsFragment = new ContactsFragment();
+            friendsFragment = new FriendsFragment();
             settingsFragment = new SettingsFragment();
             FragmentTransaction tx = getSupportFragmentManager().beginTransaction();
             tx.add(R.id.fragmentContainer, chatsFragment, TAB_CHATS);
-            tx.add(R.id.fragmentContainer, contactsFragment, TAB_CONTACTS);
+            tx.add(R.id.fragmentContainer, friendsFragment, TAB_CONTACTS);
             tx.add(R.id.fragmentContainer, settingsFragment, TAB_SETTINGS);
-            tx.hide(contactsFragment);
+            tx.hide(friendsFragment);
             tx.hide(settingsFragment);
             tx.commit();
         } else {
             chatsFragment = (ChatsFragment) getSupportFragmentManager().findFragmentByTag(TAB_CHATS);
-            contactsFragment = (ContactsFragment) getSupportFragmentManager().findFragmentByTag(TAB_CONTACTS);
+            friendsFragment = (FriendsFragment) getSupportFragmentManager().findFragmentByTag(TAB_CONTACTS);
             settingsFragment = (SettingsFragment) getSupportFragmentManager().findFragmentByTag(TAB_SETTINGS);
         }
 
@@ -104,6 +105,20 @@ public class MainActivity extends BaseActivity implements MainHost {
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        if (network != null && network.tokenStore().hasAccess()) {
+            ((OpenWhisperApp) getApplication()).socialWebSocket().start();
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        ((OpenWhisperApp) getApplication()).socialWebSocket().stop();
+        super.onStop();
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         if (!network.tokenStore().hasAccess()) {
@@ -120,7 +135,7 @@ public class MainActivity extends BaseActivity implements MainHost {
         }
         if (id == R.id.nav_contacts) {
             currentTab = TAB_CONTACTS;
-            showContacts();
+            showFriends();
             return true;
         }
         if (id == R.id.nav_settings) {
@@ -136,7 +151,7 @@ public class MainActivity extends BaseActivity implements MainHost {
         switch (tab) {
             case TAB_CONTACTS -> {
                 binding.bottomNav.setSelectedItemId(R.id.nav_contacts);
-                showContacts();
+                showFriends();
             }
             case TAB_SETTINGS -> {
                 binding.bottomNav.setSelectedItemId(R.id.nav_settings);
@@ -153,10 +168,10 @@ public class MainActivity extends BaseActivity implements MainHost {
         showOnly(chatsFragment);
     }
 
-    private void showContacts() {
-        showOnly(contactsFragment);
-        if (contactsFragment != null) {
-            contactsFragment.refresh();
+    private void showFriends() {
+        showOnly(friendsFragment);
+        if (friendsFragment != null) {
+            friendsFragment.refresh();
         }
     }
 
@@ -172,8 +187,8 @@ public class MainActivity extends BaseActivity implements MainHost {
         if (chatsFragment != null && chatsFragment != target) {
             tx.hide(chatsFragment);
         }
-        if (contactsFragment != null && contactsFragment != target) {
-            tx.hide(contactsFragment);
+        if (friendsFragment != null && friendsFragment != target) {
+            tx.hide(friendsFragment);
         }
         if (settingsFragment != null && settingsFragment != target) {
             tx.hide(settingsFragment);
@@ -206,6 +221,7 @@ public class MainActivity extends BaseActivity implements MainHost {
     }
 
     private void finishLogout() {
+        ((OpenWhisperApp) getApplication()).socialWebSocket().stop();
         network.tokenStore().clear();
         UserSession.clear();
         navigateLogin();

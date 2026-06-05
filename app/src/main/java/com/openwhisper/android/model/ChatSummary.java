@@ -20,6 +20,12 @@ public final class ChatSummary {
     @SerializedName("users")
     public List<UserRef> users;
 
+    @SerializedName("admin_username")
+    public String adminUsername;
+
+    @SerializedName("is_admin")
+    public boolean isAdmin;
+
     public int chatId() {
         if (url == null) {
             return -1;

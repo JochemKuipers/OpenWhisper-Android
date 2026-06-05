@@ -63,4 +63,21 @@ public final class ApiConfig {
         }
         return resolved;
     }
+
+    /** Site root ({@code https://host/}) for resolving media paths outside {@code /api/}. */
+    public HttpUrl siteRoot() {
+        return base.newBuilder().encodedPath("/").build();
+    }
+
+    /** Turns relative {@code /media/...} paths from WebSocket payloads into absolute URLs. */
+    public String resolveAttachmentUrl(String url) {
+        if (url == null || url.isBlank()) {
+            return "";
+        }
+        if (url.contains("://")) {
+            return url;
+        }
+        HttpUrl resolved = siteRoot().resolve(url);
+        return resolved != null ? resolved.toString() : url;
+    }
 }

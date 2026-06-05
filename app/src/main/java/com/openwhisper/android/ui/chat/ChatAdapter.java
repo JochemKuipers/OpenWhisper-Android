@@ -3,6 +3,7 @@ package com.openwhisper.android.ui.chat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -11,10 +12,16 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.openwhisper.android.databinding.ItemDateHeaderBinding;
 import com.openwhisper.android.databinding.ItemMessageReceivedBinding;
 import com.openwhisper.android.databinding.ItemMessageSentBinding;
+import com.openwhisper.android.util.AttachmentOpener;
 import com.openwhisper.android.util.MessageTimestamps;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import coil.ImageLoader;
+import coil.request.ImageRequest;
+import okhttp3.HttpUrl;
+import okhttp3.OkHttpClient;
 
 public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
@@ -22,7 +29,16 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private static final int TYPE_SENT = 1;
     private static final int TYPE_RECEIVED = 2;
 
+    private final OkHttpClient okHttpClient;
+    private final HttpUrl attachmentSiteRoot;
+    private final ImageLoader imageLoader;
     private final List<ChatListItem> items = new ArrayList<>();
+
+    public ChatAdapter(OkHttpClient okHttpClient, HttpUrl attachmentSiteRoot) {
+        this.okHttpClient = okHttpClient;
+        this.attachmentSiteRoot = attachmentSiteRoot;
+        this.imageLoader = null;
+    }
 
     @Override
     public int getItemViewType(int position) {
@@ -97,6 +113,13 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         return false;
     }
 
+    private ImageLoader imageLoaderFor(View view) {
+        if (imageLoader != null) {
+            return imageLoader;
+        }
+        return new ImageLoader.Builder(view.getContext()).okHttpClient(okHttpClient).build();
+    }
+
     private String lastDateLabel() {
         for (int i = items.size() - 1; i >= 0; i--) {
             ChatListItem item = items.get(i);
@@ -137,6 +160,64 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
     }
 
+    private void bindMessageContent(
+            View root,
+            TextView bubble,
+            ImageView attachmentImage,
+            TextView attachmentFile,
+            ChatListItem item) {
+        bindTimestamp(root.findViewById(com.openwhisper.android.R.id.timestamp), item.timestamp);
+
+        if (!item.hasAttachment()) {
+            attachmentImage.setVisibility(View.GONE);
+            attachmentFile.setVisibility(View.GONE);
+            if (item.text.isEmpty()) {
+                bubble.setVisibility(View.GONE);
+            } else {
+                bubble.setVisibility(View.VISIBLE);
+                bubble.setText(item.text);
+            }
+            return;
+        }
+
+        if (item.attachmentKind == ChatListItem.AttachmentKind.IMAGE) {
+            attachmentImage.setVisibility(View.VISIBLE);
+            attachmentFile.setVisibility(View.GONE);
+            imageLoaderFor(root)
+                    .enqueue(
+                            new ImageRequest.Builder(root.getContext())
+                                    .data(item.attachmentUrl)
+                                    .crossfade(true)
+                                    .target(attachmentImage)
+                                    .build());
+            attachmentImage.setOnClickListener(
+                    v ->
+                            AttachmentOpener.open(
+                                    v.getContext(),
+                                    okHttpClient,
+                                    attachmentSiteRoot,
+                                    item.attachmentUrl));
+        } else {
+            attachmentImage.setVisibility(View.GONE);
+            attachmentFile.setVisibility(View.VISIBLE);
+            attachmentFile.setText(item.attachmentLabel);
+            attachmentFile.setOnClickListener(
+                    v ->
+                            AttachmentOpener.open(
+                                    v.getContext(),
+                                    okHttpClient,
+                                    attachmentSiteRoot,
+                                    item.attachmentUrl));
+        }
+
+        if (item.text.isEmpty()) {
+            bubble.setVisibility(View.GONE);
+        } else {
+            bubble.setVisibility(View.VISIBLE);
+            bubble.setText(item.text);
+        }
+    }
+
     static final class DateVH extends RecyclerView.ViewHolder {
         private final ItemDateHeaderBinding binding;
 
@@ -150,7 +231,7 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
     }
 
-    static final class SentVH extends RecyclerView.ViewHolder {
+    final class SentVH extends RecyclerView.ViewHolder {
         private final ItemMessageSentBinding binding;
 
         SentVH(ItemMessageSentBinding binding) {
@@ -159,12 +240,16 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
 
         void bind(ChatListItem item) {
-            binding.bubble.setText(item.text);
-            bindTimestamp(binding.timestamp, item.timestamp);
+            bindMessageContent(
+                    binding.getRoot(),
+                    binding.bubble,
+                    binding.attachmentImage,
+                    binding.attachmentFile,
+                    item);
         }
     }
 
-    static final class ReceivedVH extends RecyclerView.ViewHolder {
+    final class ReceivedVH extends RecyclerView.ViewHolder {
         private final ItemMessageReceivedBinding binding;
 
         ReceivedVH(ItemMessageReceivedBinding binding) {
@@ -173,8 +258,12 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
 
         void bind(ChatListItem item) {
-            binding.bubble.setText(item.text);
-            bindTimestamp(binding.timestamp, item.timestamp);
+            bindMessageContent(
+                    binding.getRoot(),
+                    binding.bubble,
+                    binding.attachmentImage,
+                    binding.attachmentFile,
+                    item);
         }
     }
 

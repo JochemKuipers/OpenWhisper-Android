@@ -77,6 +77,18 @@
                 android:textSize="15sp" />
 
             <com.google.android.material.button.MaterialButton
+                android:id="@+id/attachButton"
+                style="@style/Widget.Material3.Button.IconButton"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginEnd="6dp"
+                android:contentDescription="@string/attach_file"
+                app:icon="@drawable/ic_attach"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp"
+                app:iconTint="?attr/colorOnSurface" />
+
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/sendButton"
                 style="@style/Widget.Material3.Button.IconButton.Filled"
                 android:layout_width="48dp"
