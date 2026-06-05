@@ -26,6 +26,8 @@
     <string name="instance_url_invalid">Invalid instance URL.</string>
     <string name="instance_url_saved">Instance URL saved.</string>
     <string name="instance_url_saved_relogin">Instance URL changed. Please log in again.</string>
+    <string name="instance_url_checking">Checking server…</string>
+    <string name="instance_url_unreachable">Could not reach this server. Check the URL and your network.</string>
     <string name="save">Save</string>
     <string name="search">Search</string>
     <string name="search_hint">Search....</string>

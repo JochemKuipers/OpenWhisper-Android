@@ -17,6 +17,7 @@ import com.openwhisper.android.databinding.ActivityLoginBinding;
 import com.openwhisper.android.model.LoginRequest;
 import com.openwhisper.android.model.TokenResponse;
 import com.openwhisper.android.model.UserProfile;
+import com.openwhisper.android.ui.main.SettingsActivity;
 import com.openwhisper.android.ui.register.RegisterActivity;
 import com.openwhisper.android.ui.main.MainActivity;
 import com.openwhisper.android.util.ApiErrors;
@@ -49,6 +50,8 @@ public class LoginActivity extends BaseActivity {
         binding.loginButton.setOnClickListener(v -> attemptLogin());
         binding.goRegisterButton.setOnClickListener(
                 v -> startActivity(new Intent(this, RegisterActivity.class)));
+        binding.settingsButton.setOnClickListener(
+                v -> startActivity(new Intent(this, SettingsActivity.class)));
     }
 
     private void attemptLogin() {
@@ -141,6 +144,7 @@ public class LoginActivity extends BaseActivity {
         binding.progress.setVisibility(busy ? View.VISIBLE : View.GONE);
         binding.loginButton.setEnabled(!busy);
         binding.goRegisterButton.setEnabled(!busy);
+        binding.settingsButton.setEnabled(!busy);
     }
 
     private static String text(com.google.android.material.textfield.TextInputEditText et) {

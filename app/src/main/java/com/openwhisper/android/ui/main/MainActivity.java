@@ -22,7 +22,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends BaseActivity implements MainHost {
+public class MainActivity extends BaseActivity implements MainHost, SettingsHost {
 
     public static final String EXTRA_CHAT_ID = "chat_id";
     public static final String EXTRA_CHAT_TITLE = "chat_title";
@@ -232,5 +232,15 @@ public class MainActivity extends BaseActivity implements MainHost {
         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(i);
         finish();
+    }
+
+    @Override
+    public boolean showLogout() {
+        return true;
+    }
+
+    @Override
+    public void onInstanceUrlSaved() {
+        ((OpenWhisperApp) getApplication()).recreateNetworkModule();
     }
 }

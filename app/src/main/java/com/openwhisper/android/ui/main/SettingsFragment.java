@@ -19,20 +19,22 @@ import com.openwhisper.android.data.SettingsStore;
 import com.openwhisper.android.databinding.FragmentSettingsBinding;
 import com.openwhisper.android.ui.login.LoginActivity;
 import com.openwhisper.android.util.AppTheme;
+import com.openwhisper.android.util.InstanceUrlChecker;
 
 public class SettingsFragment extends Fragment {
 
     private FragmentSettingsBinding binding;
-    private MainHost host;
+    private SettingsHost host;
     private SettingsStore settings;
+    private boolean savingInstanceUrl;
 
     @Override
     public void onAttach(@NonNull android.content.Context context) {
         super.onAttach(context);
-        if (!(context instanceof MainHost)) {
-            throw new IllegalStateException("Host must implement MainHost");
+        if (!(context instanceof SettingsHost)) {
+            throw new IllegalStateException("Host must implement SettingsHost");
         }
-        host = (MainHost) context;
+        host = (SettingsHost) context;
     }
 
     @Nullable
@@ -49,7 +51,10 @@ public class SettingsFragment extends Fragment {
         settings = ((OpenWhisperApp) requireActivity().getApplication()).settings();
         bindThemeControls();
         bindInstanceUrl();
-        binding.logoutButton.setOnClickListener(v -> host.logout());
+        binding.logoutButton.setVisibility(host.showLogout() ? View.VISIBLE : View.GONE);
+        if (host.showLogout()) {
+            binding.logoutButton.setOnClickListener(v -> ((MainHost) requireActivity()).logout());
+        }
     }
 
     private void bindThemeControls() {
@@ -109,37 +114,90 @@ public class SettingsFragment extends Fragment {
     }
 
     private void saveInstanceUrl() {
+        if (savingInstanceUrl) {
+            return;
+        }
+
         String input =
                 binding.instanceUrlInput.getText() != null
                         ? binding.instanceUrlInput.getText().toString().trim()
                         : "";
         String previous = settings.getCustomInstanceUrl();
 
-        String newStored;
+        final String normalizedForStorage;
         try {
-            newStored = input.isEmpty() ? "" : ApiConfig.normalizeCustomUrl(input);
+            if (input.isEmpty()) {
+                normalizedForStorage = "";
+            } else {
+                normalizedForStorage = ApiConfig.normalizeCustomUrl(input);
+            }
         } catch (IllegalArgumentException e) {
             Toast.makeText(requireContext(), R.string.instance_url_invalid, Toast.LENGTH_LONG).show();
             return;
         }
 
-        if (newStored.equals(previous)) {
+        if (normalizedForStorage.equals(previous)) {
             Toast.makeText(requireContext(), R.string.instance_url_saved, Toast.LENGTH_SHORT).show();
             return;
         }
 
+        if (normalizedForStorage.isEmpty()) {
+            persistInstanceUrl(normalizedForStorage);
+            return;
+        }
+
+        setInstanceUrlBusy(true);
+        InstanceUrlChecker.verifyReachable(
+                normalizedForStorage,
+                new InstanceUrlChecker.Listener() {
+                    @Override
+                    public void onReachable() {
+                        if (!isAdded() || binding == null) {
+                            return;
+                        }
+                        persistInstanceUrl(normalizedForStorage);
+                    }
+
+                    @Override
+                    public void onFailure() {
+                        if (!isAdded() || binding == null) {
+                            return;
+                        }
+                        setInstanceUrlBusy(false);
+                        Toast.makeText(requireContext(), R.string.instance_url_unreachable, Toast.LENGTH_LONG)
+                                .show();
+                    }
+                });
+    }
+
+    private void persistInstanceUrl(String newStored) {
         settings.setCustomInstanceUrl(newStored);
         binding.instanceUrlInput.setText(newStored);
+        setInstanceUrlBusy(false);
 
         OpenWhisperApp app = (OpenWhisperApp) requireActivity().getApplication();
-        host.network().tokenStore().clear();
-        com.openwhisper.android.data.UserSession.clear();
-        app.recreateNetworkModule();
-        Toast.makeText(requireContext(), R.string.instance_url_saved_relogin, Toast.LENGTH_LONG).show();
-        Intent intent = new Intent(requireContext(), LoginActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
-        requireActivity().finish();
+        if (host.showLogout() && host.network().tokenStore().hasAccess()) {
+            app.socialWebSocket().stop();
+            host.network().tokenStore().clear();
+            com.openwhisper.android.data.UserSession.clear();
+            app.recreateNetworkModule();
+            Toast.makeText(requireContext(), R.string.instance_url_saved_relogin, Toast.LENGTH_LONG).show();
+            Intent intent = new Intent(requireContext(), LoginActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            requireActivity().finish();
+            return;
+        }
+
+        host.onInstanceUrlSaved();
+        Toast.makeText(requireContext(), R.string.instance_url_saved, Toast.LENGTH_SHORT).show();
+    }
+
+    private void setInstanceUrlBusy(boolean busy) {
+        savingInstanceUrl = busy;
+        binding.saveInstanceUrlButton.setEnabled(!busy);
+        binding.instanceUrlInput.setEnabled(!busy);
+        binding.saveInstanceUrlButton.setText(busy ? R.string.instance_url_checking : R.string.save);
     }
 
     @Override
