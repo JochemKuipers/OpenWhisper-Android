@@ -64,9 +64,10 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     }
 
     public void setHistory(List<ChatListItem> history) {
+        int oldSize = items.size();
         items.clear();
         items.addAll(withDateHeaders(history));
-        notifyDataSetChanged();
+        notifyRangeReplaced(oldSize, items.size());
     }
 
     public void append(ChatListItem item) {
@@ -78,9 +79,10 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         String date = MessageTimestamps.formatDateLabel(item.createdAtIso);
         if (!date.isEmpty() && !date.equals(lastDateLabel())) {
             items.add(ChatListItem.dateHeader(date));
+            notifyItemInserted(items.size() - 1);
         }
         items.add(item);
-        notifyDataSetChanged();
+        notifyItemInserted(items.size() - 1);
     }
 
     public boolean containsMessageId(long id) {
@@ -124,6 +126,15 @@ public final class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             out.add(message);
         }
         return out;
+    }
+
+    private void notifyRangeReplaced(int oldSize, int newSize) {
+        if (oldSize != 0) {
+            notifyItemRangeRemoved(0, oldSize);
+        }
+        if (newSize != 0) {
+            notifyItemRangeInserted(0, newSize);
+        }
     }
 
     static final class DateVH extends RecyclerView.ViewHolder {

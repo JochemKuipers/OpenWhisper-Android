@@ -17,11 +17,12 @@ public final class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.
     private final List<String> items = new ArrayList<>();
 
     public void setItems(List<String> usernames) {
+        int oldSize = items.size();
         items.clear();
         if (usernames != null) {
             items.addAll(usernames);
         }
-        notifyDataSetChanged();
+        notifyRangeReplaced(oldSize, items.size());
     }
 
     @NonNull
@@ -40,7 +41,7 @@ public final class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.
         return items.size();
     }
 
-    static final class VH extends RecyclerView.ViewHolder {
+    public static final class VH extends RecyclerView.ViewHolder {
         private final ItemContactBinding binding;
 
         VH(ItemContactBinding binding) {
@@ -51,6 +52,15 @@ public final class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.
         void bind(String username) {
             binding.username.setText(username);
             AvatarText.apply(binding.avatar, username);
+        }
+    }
+
+    private void notifyRangeReplaced(int oldSize, int newSize) {
+        if (oldSize != 0) {
+            notifyItemRangeRemoved(0, oldSize);
+        }
+        if (newSize != 0) {
+            notifyItemRangeInserted(0, newSize);
         }
     }
 }

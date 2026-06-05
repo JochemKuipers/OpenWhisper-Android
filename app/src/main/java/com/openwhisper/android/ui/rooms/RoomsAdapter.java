@@ -47,6 +47,7 @@ public final class RoomsAdapter extends RecyclerView.Adapter<RoomsAdapter.VH> {
     }
 
     private void applyFilter() {
+        int oldSize = visibleItems.size();
         visibleItems.clear();
         if (query.isEmpty()) {
             visibleItems.addAll(allItems);
@@ -59,7 +60,7 @@ public final class RoomsAdapter extends RecyclerView.Adapter<RoomsAdapter.VH> {
                 }
             }
         }
-        notifyDataSetChanged();
+        notifyRangeReplaced(oldSize, visibleItems.size());
     }
 
     @NonNull
@@ -78,7 +79,7 @@ public final class RoomsAdapter extends RecyclerView.Adapter<RoomsAdapter.VH> {
         return visibleItems.size();
     }
 
-    static final class VH extends RecyclerView.ViewHolder {
+    public static final class VH extends RecyclerView.ViewHolder {
         private final ItemRoomBinding binding;
 
         VH(ItemRoomBinding binding) {
@@ -94,6 +95,15 @@ public final class RoomsAdapter extends RecyclerView.Adapter<RoomsAdapter.VH> {
             binding.subtitle.setVisibility(subtitle.isEmpty() ? android.view.View.GONE : android.view.View.VISIBLE);
             AvatarText.apply(binding.avatar, title);
             binding.roomContent.setOnClickListener(v -> listener.onChatClicked(chat));
+        }
+    }
+
+    private void notifyRangeReplaced(int oldSize, int newSize) {
+        if (oldSize != 0) {
+            notifyItemRangeRemoved(0, oldSize);
+        }
+        if (newSize != 0) {
+            notifyItemRangeInserted(0, newSize);
         }
     }
 }
