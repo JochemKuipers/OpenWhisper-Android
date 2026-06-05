@@ -75,7 +75,7 @@ public class MainActivity extends BaseActivity implements MainHost {
     }
 
     @Override
-    protected void onNewIntent(Intent intent) {
+    protected void onNewIntent(@NonNull Intent intent) {
         super.onNewIntent(intent);
         setIntent(intent);
         String tab = intent.getStringExtra(EXTRA_TAB);
@@ -141,7 +141,7 @@ public class MainActivity extends BaseActivity implements MainHost {
         network.api()
                 .logout()
                 .enqueue(
-                        new Callback<ResponseBody>() {
+                        new Callback<>() {
                             @Override
                             public void onResponse(
                                     @NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {

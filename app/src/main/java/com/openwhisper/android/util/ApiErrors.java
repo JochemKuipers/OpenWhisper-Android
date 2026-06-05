@@ -32,7 +32,7 @@ public final class ApiErrors {
                 // fall through
             }
         }
-        return response.message() != null ? response.message() : ("HTTP " + response.code());
+        return response.message();
     }
 
     private static String parseDetailJson(String raw) {

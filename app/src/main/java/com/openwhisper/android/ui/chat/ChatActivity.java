@@ -46,7 +46,6 @@ public class ChatActivity extends BaseActivity {
     private NetworkModule network;
     private ChatAdapter adapter;
     private int chatId = -1;
-    private String chatTitle = "";
     private WebSocket webSocket;
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
 
@@ -61,7 +60,7 @@ public class ChatActivity extends BaseActivity {
 
         network = ((OpenWhisperApp) getApplication()).network();
         chatId = getIntent().getIntExtra(MainActivity.EXTRA_CHAT_ID, -1);
-        chatTitle = getIntent().getStringExtra(MainActivity.EXTRA_CHAT_TITLE);
+        String chatTitle = getIntent().getStringExtra(MainActivity.EXTRA_CHAT_TITLE);
         if (chatTitle == null) {
             chatTitle = getString(R.string.chats);
         }
@@ -114,7 +113,7 @@ public class ChatActivity extends BaseActivity {
         network.api()
                 .listMessages(chatId)
                 .enqueue(
-                        new Callback<List<ApiMessage>>() {
+                        new Callback<>() {
                             @Override
                             public void onResponse(
                                     @NonNull Call<List<ApiMessage>> call,
@@ -237,7 +236,7 @@ public class ChatActivity extends BaseActivity {
         network.api()
                 .postMessage(chatId, new SendMessageBody(text))
                 .enqueue(
-                        new Callback<ApiMessage>() {
+                        new Callback<>() {
                             @Override
                             public void onResponse(
                                     @NonNull Call<ApiMessage> call,

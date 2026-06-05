@@ -59,7 +59,7 @@ final class TokenAuthenticator implements Authenticator {
 
         OkHttpClient plain = new OkHttpClient();
         try (Response r = plain.newCall(refreshReq).execute()) {
-            if (!r.isSuccessful() || r.body() == null) {
+            if (!r.isSuccessful()) {
                 tokenStore.clear();
                 UserSession.clear();
                 return null;

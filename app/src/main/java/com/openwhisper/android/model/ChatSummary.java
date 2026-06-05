@@ -3,6 +3,7 @@ package com.openwhisper.android.model;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -24,7 +25,7 @@ public final class ChatSummary {
         }
         Matcher m = CHAT_ID.matcher(url);
         if (m.find()) {
-            return Integer.parseInt(m.group(1));
+            return Integer.parseInt(Objects.requireNonNull(m.group(1)));
         }
         return -1;
     }

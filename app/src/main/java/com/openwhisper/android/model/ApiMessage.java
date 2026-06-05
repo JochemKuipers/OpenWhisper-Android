@@ -2,6 +2,7 @@ package com.openwhisper.android.model;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -29,7 +30,7 @@ public final class ApiMessage {
         }
         Matcher m = MSG_ID.matcher(url);
         if (m.find()) {
-            return Long.parseLong(m.group(1));
+            return Long.parseLong(Objects.requireNonNull(m.group(1)));
         }
         return -1L;
     }

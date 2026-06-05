@@ -64,7 +64,7 @@ public class ContactsFragment extends Fragment {
                 .api()
                 .listChats()
                 .enqueue(
-                        new Callback<List<ChatSummary>>() {
+                        new Callback<>() {
                             @Override
                             public void onResponse(
                                     @NonNull Call<List<ChatSummary>> call, @NonNull Response<List<ChatSummary>> response) {

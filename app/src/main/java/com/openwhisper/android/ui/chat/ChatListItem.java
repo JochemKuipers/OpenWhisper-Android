@@ -50,10 +50,9 @@ public final class ChatListItem {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof ChatListItem)) {
+        if (!(o instanceof ChatListItem that)) {
             return false;
         }
-        ChatListItem that = (ChatListItem) o;
         return messageId == that.messageId && dateHeader == that.dateHeader;
     }
 

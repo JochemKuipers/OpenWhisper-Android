@@ -56,7 +56,7 @@ public class RegisterActivity extends BaseActivity {
         network.api()
                 .register(new RegisterRequest(username, email, password, confirm))
                 .enqueue(
-                        new Callback<ResponseBody>() {
+                        new Callback<>() {
                             @Override
                             public void onResponse(
                                     @NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {

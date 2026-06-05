@@ -63,7 +63,7 @@ public class LoginActivity extends BaseActivity {
         network.api()
                 .login(new LoginRequest(username, password))
                 .enqueue(
-                        new Callback<TokenResponse>() {
+                        new Callback<>() {
                             @Override
                             public void onResponse(
                                     @NonNull Call<TokenResponse> call, @NonNull Response<TokenResponse> response) {
@@ -110,7 +110,7 @@ public class LoginActivity extends BaseActivity {
         network.api()
                 .me()
                 .enqueue(
-                        new Callback<UserProfile>() {
+                        new Callback<>() {
                             @Override
                             public void onResponse(@NonNull Call<UserProfile> call, @NonNull Response<UserProfile> response) {
                                 setBusy(false);
