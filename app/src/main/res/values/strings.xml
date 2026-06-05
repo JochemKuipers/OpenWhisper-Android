@@ -19,7 +19,7 @@
     <string name="no_contacts">No contacts yet.</string>
     <string name="logout">Log out</string>
     <string name="send">Send</string>
-    <string name="type_message_hint">Type a message...</string>
+    <string name="type_message_hint">Type a message…</string>
     <string name="error_generic">Something went wrong.</string>
     <string name="error_network">Network error.</string>
     <string name="registration_ok">Account created. You can log in.</string>

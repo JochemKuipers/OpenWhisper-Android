@@ -64,6 +64,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="10dp"
                 android:layout_weight="1"
+                android:autofillHints="message"
                 android:background="@drawable/bg_input_field"
                 android:hint="@string/type_message_hint"
                 android:inputType="textCapSentences|textMultiLine"
