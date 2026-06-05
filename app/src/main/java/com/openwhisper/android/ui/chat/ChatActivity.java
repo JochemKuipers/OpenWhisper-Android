@@ -151,12 +151,7 @@ public class ChatActivity extends BaseActivity {
             body = "[Attachment]";
         }
         return new ChatListItem(
-                m.messageId(),
-                mine,
-                m.senderUsername(),
-                body,
-                MessageTimestamps.format(m.createdAt),
-                m.createdAt);
+                m.messageId(), mine, body, MessageTimestamps.format(m.createdAt), m.createdAt);
     }
 
     private void mapWsToUi(WsChatEvent ev) {
@@ -182,8 +177,7 @@ public class ChatActivity extends BaseActivity {
         if (timestamp.isEmpty()) {
             timestamp = MessageTimestamps.formatNow();
         }
-        ChatListItem item =
-                new ChatListItem(ev.messageId, mine, ev.senderUsername, body, timestamp, createdAtIso);
+        ChatListItem item = new ChatListItem(ev.messageId, mine, body, timestamp, createdAtIso);
         mainHandler.post(
                 () -> {
                     adapter.append(item);

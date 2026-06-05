@@ -27,32 +27,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         ViewCompat.requestApplyInsets(root);
     }
 
-    protected void applyTopSystemBarPadding(View view) {
-        ViewCompat.setOnApplyWindowInsetsListener(view, (v, insets) -> {
-            Insets bars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(v.getPaddingLeft(), bars.top, v.getPaddingRight(), v.getPaddingBottom());
-            return insets;
-        });
-        ViewCompat.requestApplyInsets(view);
-    }
-
-    protected void applyImePadding(View view) {
-        final int initialLeft = view.getPaddingLeft();
-        final int initialTop = view.getPaddingTop();
-        final int initialRight = view.getPaddingRight();
-        final int initialBottom = view.getPaddingBottom();
-        ViewCompat.setOnApplyWindowInsetsListener(view, (v, insets) -> {
-            Insets bars = insets.getInsets(WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.ime());
-            v.setPadding(
-                    initialLeft + bars.left,
-                    initialTop,
-                    initialRight + bars.right,
-                    initialBottom + bars.bottom);
-            return insets;
-        });
-        ViewCompat.requestApplyInsets(view);
-    }
-
     protected void applyImeOnlyPadding(View view) {
         final int initialLeft = view.getPaddingLeft();
         final int initialTop = view.getPaddingTop();

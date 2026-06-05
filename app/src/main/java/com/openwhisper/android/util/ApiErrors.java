@@ -17,20 +17,21 @@ public final class ApiErrors {
 
     @NonNull
     public static String humanMessage(Response<?> response) {
-        ResponseBody eb = response.errorBody();
-        if (eb != null) {
-            try {
-                String raw = eb.string();
-                String parsed = parseDetailJson(raw);
-                if (parsed != null && !parsed.isEmpty()) {
-                    return parsed;
-                }
-                if (!raw.isEmpty()) {
-                    return raw;
-                }
-            } catch (IOException ignored) {
-                // fall through
+        ResponseBody errorBody = response.errorBody();
+        if (errorBody == null) {
+            return response.message();
+        }
+        try (ResponseBody eb = errorBody) {
+            String raw = eb.string();
+            String parsed = parseDetailJson(raw);
+            if (parsed != null && !parsed.isEmpty()) {
+                return parsed;
             }
+            if (!raw.isEmpty()) {
+                return raw;
+            }
+        } catch (IOException ignored) {
+            // fall through
         }
         return response.message();
     }

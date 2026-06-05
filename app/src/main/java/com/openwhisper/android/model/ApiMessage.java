@@ -6,6 +6,7 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@SuppressWarnings("unused")
 public final class ApiMessage {
     private static final Pattern MSG_ID = Pattern.compile("/messages/(\\d+)/?$");
 

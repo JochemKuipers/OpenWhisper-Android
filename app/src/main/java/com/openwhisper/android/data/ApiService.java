@@ -9,7 +9,6 @@ import com.openwhisper.android.model.TokenResponse;
 import com.openwhisper.android.model.UserProfile;
 
 import java.util.List;
-import java.util.Map;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -22,9 +21,6 @@ public interface ApiService {
 
     @POST("token/")
     Call<TokenResponse> login(@Body LoginRequest body);
-
-    @POST("token/refresh/")
-    Call<TokenResponse> refresh(@Body Map<String, String> body);
 
     @POST("register/")
     Call<ResponseBody> register(@Body RegisterRequest body);

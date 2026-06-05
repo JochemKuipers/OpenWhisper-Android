@@ -7,6 +7,7 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@SuppressWarnings("unused")
 public final class ChatSummary {
     private static final Pattern CHAT_ID = Pattern.compile("/chats/(\\d+)/?$");
 

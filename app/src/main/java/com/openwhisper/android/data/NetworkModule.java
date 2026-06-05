@@ -4,7 +4,6 @@ import android.content.Context;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.openwhisper.android.BuildConfig;
 
 import java.util.concurrent.TimeUnit;
 
@@ -30,12 +29,12 @@ public final class NetworkModule {
                         .readTimeout(30, TimeUnit.SECONDS)
                         .writeTimeout(30, TimeUnit.SECONDS)
                         .addInterceptor(new AuthInterceptor(tokenStore))
-                        .authenticator(new TokenAuthenticator(tokenStore, BuildConfig.API_BASE_URL))
+                        .authenticator(new TokenAuthenticator(tokenStore))
                         .build();
 
         Retrofit retrofit =
                 new Retrofit.Builder()
-                        .baseUrl(BuildConfig.API_BASE_URL)
+                        .baseUrl(ApiConfig.baseUrl())
                         .client(okHttpClient)
                         .addConverterFactory(GsonConverterFactory.create(gson))
                         .build();
@@ -59,29 +58,33 @@ public final class NetworkModule {
         return gson;
     }
 
-    /** Builds {@code ws://host/ws/chats/{id}/?token=...} from the HTTP API base URL. */
+    /** Builds a {@code ws(s)://host/ws/chats/{id}/?token=...} URL from the HTTP API base URL. */
     public String webSocketUrl(int chatId) {
-        HttpUrl api = HttpUrl.parse(BuildConfig.API_BASE_URL);
-        if (api == null) {
-            throw new IllegalStateException("Invalid API_BASE_URL");
-        }
-        HttpUrl siteRoot = api.resolve("/");
-        if (siteRoot == null) {
-            throw new IllegalStateException("Invalid API_BASE_URL");
-        }
+        HttpUrl siteRoot = ApiConfig.resolve("/");
         String token = tokenStore.getAccessToken();
         HttpUrl httpUrl =
                 siteRoot.newBuilder()
                         .encodedPath("/ws/chats/" + chatId + "/")
                         .addQueryParameter("token", token != null ? token : "")
                         .build();
-        String url = httpUrl.toString();
-        if (url.startsWith("https://")) {
-            return "wss://" + url.substring(8);
+        return toWebSocketUrl(httpUrl);
+    }
+
+    private static String toWebSocketUrl(HttpUrl httpUrl) {
+        String wsScheme = httpUrl.isHttps() ? "wss" : "ws";
+        StringBuilder url = new StringBuilder();
+        url.append(wsScheme).append(':').append('/').append('/');
+        url.append(httpUrl.host());
+        int port = httpUrl.port();
+        int defaultPort = httpUrl.isHttps() ? 443 : 80;
+        if (port != defaultPort) {
+            url.append(':').append(port);
         }
-        if (url.startsWith("http://")) {
-            return "ws://" + url.substring(7);
+        url.append(httpUrl.encodedPath());
+        String query = httpUrl.encodedQuery();
+        if (query != null) {
+            url.append('?').append(query);
         }
-        return url;
+        return url.toString();
     }
 }
