@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.openwhisper.android.OpenWhisperApp;
 import com.openwhisper.android.R;
 import com.openwhisper.android.data.SocialWebSocketManager;
+import com.openwhisper.android.data.UserSession;
 import com.openwhisper.android.databinding.FragmentFriendsBinding;
 import com.openwhisper.android.model.ChatSummary;
 import com.openwhisper.android.model.FriendRequestsResponse;
@@ -338,7 +339,9 @@ public class FriendsFragment extends Fragment implements FriendsAdapter.Listener
                                 ChatSummary chat = response.body();
                                 Intent intent = new Intent(requireContext(), ChatActivity.class);
                                 intent.putExtra(MainActivity.EXTRA_CHAT_ID, chat.chatId());
-                                intent.putExtra(MainActivity.EXTRA_CHAT_TITLE, chat.displayTitle());
+                                intent.putExtra(
+                                        MainActivity.EXTRA_CHAT_TITLE,
+                                        chat.displayTitle(UserSession.getUsername()));
                                 startActivity(intent);
                             }
 

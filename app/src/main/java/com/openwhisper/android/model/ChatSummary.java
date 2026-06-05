@@ -1,5 +1,13 @@
 package com.openwhisper.android.model;
 
+import android.graphics.Typeface;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.style.StyleSpan;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
@@ -37,28 +45,79 @@ public final class ChatSummary {
         return -1;
     }
 
-    public String displayTitle() {
+    public boolean isDirectChat() {
+        return users != null && users.size() == 2;
+    }
+
+    @Nullable
+    public String otherUsername(@Nullable String currentUsername) {
+        if (!isDirectChat() || currentUsername == null) {
+            return null;
+        }
+        for (UserRef user : users) {
+            if (user != null
+                    && user.username != null
+                    && !user.username.equalsIgnoreCase(currentUsername)) {
+                return user.username;
+            }
+        }
+        return null;
+    }
+
+    public String displayTitle(@Nullable String currentUsername) {
         if (title != null && !title.isBlank()) {
             return title.trim();
+        }
+        String other = otherUsername(currentUsername);
+        if (other != null) {
+            return other;
         }
         return "Chat";
     }
 
-    public String memberSubtitle() {
-        if (users == null || users.isEmpty()) {
+    /** Plain-text member list for search; empty for 1:1 chats. */
+    public String memberSubtitlePlain(@Nullable String currentUsername, @NonNull String youLabel) {
+        if (isDirectChat() || users == null || users.isEmpty()) {
             return "";
         }
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < users.size(); i++) {
-            if (i > 0) {
+        return joinMemberNames(currentUsername, youLabel, false).toString();
+    }
+
+    /** Styled member list for the chat list; empty for 1:1 chats. */
+    public CharSequence memberSubtitleDisplay(@Nullable String currentUsername, @NonNull String youLabel) {
+        if (isDirectChat() || users == null || users.isEmpty()) {
+            return "";
+        }
+        return joinMemberNames(currentUsername, youLabel, true);
+    }
+
+    private CharSequence joinMemberNames(
+            @Nullable String currentUsername, @NonNull String youLabel, boolean boldYou) {
+        SpannableStringBuilder sb = new SpannableStringBuilder();
+        boolean first = true;
+        for (UserRef user : users) {
+            if (user == null || user.username == null) {
+                continue;
+            }
+            if (!first) {
                 sb.append(", ");
             }
-            UserRef u = users.get(i);
-            if (u != null && u.username != null) {
-                sb.append(u.username);
+            first = false;
+            if (currentUsername != null && user.username.equalsIgnoreCase(currentUsername)) {
+                int start = sb.length();
+                sb.append(youLabel);
+                if (boldYou) {
+                    sb.setSpan(
+                            new StyleSpan(Typeface.BOLD),
+                            start,
+                            sb.length(),
+                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                }
+            } else {
+                sb.append(user.username);
             }
         }
-        return sb.toString();
+        return sb;
     }
 
     public static final class UserRef {

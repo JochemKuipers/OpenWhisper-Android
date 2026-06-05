@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.openwhisper.android.OpenWhisperApp;
 import com.openwhisper.android.R;
 import com.openwhisper.android.data.SocialWebSocketManager;
+import com.openwhisper.android.data.UserSession;
 import com.openwhisper.android.databinding.FragmentChatsBinding;
 import com.openwhisper.android.model.ChatSummary;
 import com.openwhisper.android.ui.chat.ChatActivity;
@@ -55,7 +56,7 @@ public class ChatsFragment extends Fragment implements RoomsAdapter.Listener {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        adapter = new RoomsAdapter(this);
+        adapter = new RoomsAdapter(this, getString(R.string.you));
         binding.recycler.setLayoutManager(new LinearLayoutManager(requireContext()));
         binding.recycler.setAdapter(adapter);
 
@@ -161,7 +162,7 @@ public class ChatsFragment extends Fragment implements RoomsAdapter.Listener {
         }
         Intent i = new Intent(requireContext(), ChatActivity.class);
         i.putExtra(MainActivity.EXTRA_CHAT_ID, id);
-        i.putExtra(MainActivity.EXTRA_CHAT_TITLE, chat.displayTitle());
+        i.putExtra(MainActivity.EXTRA_CHAT_TITLE, chat.displayTitle(UserSession.getUsername()));
         startActivity(i);
     }
 

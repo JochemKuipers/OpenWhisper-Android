@@ -37,6 +37,7 @@
     <string name="incoming_requests">Incoming requests</string>
     <string name="outgoing_requests">Outgoing requests</string>
     <string name="your_friends">Your friends</string>
+    <string name="you">You</string>
     <string name="no_friends">No friends yet. Search for people and send a request.</string>
     <string name="accept">Accept</string>
     <string name="decline">Decline</string>
