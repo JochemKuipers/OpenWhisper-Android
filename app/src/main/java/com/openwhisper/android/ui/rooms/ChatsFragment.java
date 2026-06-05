@@ -56,7 +56,11 @@ public class ChatsFragment extends Fragment implements RoomsAdapter.Listener {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        adapter = new RoomsAdapter(this, getString(R.string.you));
+        adapter =
+                new RoomsAdapter(
+                        this,
+                        getString(R.string.you),
+                        getString(R.string.default_group_chat_title));
         binding.recycler.setLayoutManager(new LinearLayoutManager(requireContext()));
         binding.recycler.setAdapter(adapter);
 
@@ -162,7 +166,9 @@ public class ChatsFragment extends Fragment implements RoomsAdapter.Listener {
         }
         Intent i = new Intent(requireContext(), ChatActivity.class);
         i.putExtra(MainActivity.EXTRA_CHAT_ID, id);
-        i.putExtra(MainActivity.EXTRA_CHAT_TITLE, chat.displayTitle(UserSession.getUsername()));
+        i.putExtra(
+                MainActivity.EXTRA_CHAT_TITLE,
+                chat.displayTitle(UserSession.getUsername(), getString(R.string.default_group_chat_title)));
         startActivity(i);
     }
 

@@ -341,7 +341,9 @@ public class FriendsFragment extends Fragment implements FriendsAdapter.Listener
                                 intent.putExtra(MainActivity.EXTRA_CHAT_ID, chat.chatId());
                                 intent.putExtra(
                                         MainActivity.EXTRA_CHAT_TITLE,
-                                        chat.displayTitle(UserSession.getUsername()));
+                                        chat.displayTitle(
+                                                UserSession.getUsername(),
+                                                getString(R.string.default_group_chat_title)));
                                 startActivity(intent);
                             }
 

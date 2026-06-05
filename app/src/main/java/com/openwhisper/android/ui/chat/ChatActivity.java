@@ -123,7 +123,7 @@ public class ChatActivity extends BaseActivity implements ChatInfoBottomSheet.Ho
     public void onChatInfoUpdated(@NonNull ChatSummary chat) {
         ActionBar ab = getSupportActionBar();
         if (ab != null) {
-            ab.setTitle(chat.displayTitle(UserSession.getUsername()));
+            ab.setTitle(chat.displayTitle(UserSession.getUsername(), getString(R.string.default_group_chat_title)));
         }
     }
 

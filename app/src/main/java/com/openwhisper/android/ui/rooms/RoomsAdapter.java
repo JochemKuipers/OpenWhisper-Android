@@ -25,11 +25,16 @@ public final class RoomsAdapter extends RecyclerView.Adapter<RoomsAdapter.VH> {
     private final List<ChatSummary> visibleItems = new ArrayList<>();
     private final Listener listener;
     private final String youLabel;
+    private final String defaultGroupTitle;
     private String query = "";
 
-    public RoomsAdapter(@NonNull Listener listener, @NonNull String youLabel) {
+    public RoomsAdapter(
+            @NonNull Listener listener,
+            @NonNull String youLabel,
+            @NonNull String defaultGroupTitle) {
         this.listener = listener;
         this.youLabel = youLabel;
+        this.defaultGroupTitle = defaultGroupTitle;
     }
 
     public void setItems(List<ChatSummary> next) {
@@ -57,7 +62,7 @@ public final class RoomsAdapter extends RecyclerView.Adapter<RoomsAdapter.VH> {
         } else {
             String me = UserSession.getUsername();
             for (ChatSummary chat : allItems) {
-                String title = chat.displayTitle(me).toLowerCase(Locale.ROOT);
+                String title = chat.displayTitle(me, defaultGroupTitle).toLowerCase(Locale.ROOT);
                 String subtitle = chat.memberSubtitlePlain(me, youLabel).toLowerCase(Locale.ROOT);
                 if (title.contains(query) || subtitle.contains(query)) {
                     visibleItems.add(chat);
@@ -75,7 +80,7 @@ public final class RoomsAdapter extends RecyclerView.Adapter<RoomsAdapter.VH> {
 
     @Override
     public void onBindViewHolder(@NonNull VH holder, int position) {
-        holder.bind(visibleItems.get(position), listener, youLabel);
+        holder.bind(visibleItems.get(position), listener, youLabel, defaultGroupTitle);
     }
 
     @Override
@@ -91,9 +96,9 @@ public final class RoomsAdapter extends RecyclerView.Adapter<RoomsAdapter.VH> {
             this.binding = binding;
         }
 
-        void bind(ChatSummary chat, Listener listener, String youLabel) {
+        void bind(ChatSummary chat, Listener listener, String youLabel, String defaultGroupTitle) {
             String me = UserSession.getUsername();
-            String title = chat.displayTitle(me);
+            String title = chat.displayTitle(me, defaultGroupTitle);
             binding.title.setText(title);
             CharSequence subtitle = chat.memberSubtitleDisplay(me, youLabel);
             binding.subtitle.setText(subtitle);

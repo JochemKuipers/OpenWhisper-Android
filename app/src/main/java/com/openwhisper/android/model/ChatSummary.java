@@ -64,7 +64,7 @@ public final class ChatSummary {
         return null;
     }
 
-    public String displayTitle(@Nullable String currentUsername) {
+    public String displayTitle(@Nullable String currentUsername, @NonNull String defaultGroupTitle) {
         if (title != null && !title.isBlank()) {
             return title.trim();
         }
@@ -72,7 +72,7 @@ public final class ChatSummary {
         if (other != null) {
             return other;
         }
-        return "Chat";
+        return defaultGroupTitle;
     }
 
     /** Plain-text member list for search; empty for 1:1 chats. */
