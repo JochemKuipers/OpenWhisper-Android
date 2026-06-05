@@ -105,6 +105,14 @@ public class ChatActivity extends BaseActivity {
             finish();
             return true;
         }
+        if (item.getItemId() == R.id.nav_settings) {
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.putExtra(MainActivity.EXTRA_TAB, MainActivity.TAB_SETTINGS);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(intent);
+            finish();
+            return true;
+        }
         return false;
     }
 

@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.openwhisper.android.OpenWhisperApp;
@@ -29,11 +30,16 @@ public class MainActivity extends BaseActivity implements MainHost {
 
     public static final String TAB_CHATS = "chats";
     public static final String TAB_CONTACTS = "contacts";
+    public static final String TAB_SETTINGS = "settings";
+
+    private static final String STATE_SELECTED_TAB = "selected_tab";
 
     private ActivityMainBinding binding;
     private NetworkModule network;
     private ChatsFragment chatsFragment;
     private ContactsFragment contactsFragment;
+    private SettingsFragment settingsFragment;
+    private String currentTab = TAB_CHATS;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,29 +55,42 @@ public class MainActivity extends BaseActivity implements MainHost {
             return;
         }
 
+        if (savedInstanceState != null) {
+            currentTab = savedInstanceState.getString(STATE_SELECTED_TAB, TAB_CHATS);
+        }
+
         if (savedInstanceState == null) {
             chatsFragment = new ChatsFragment();
             contactsFragment = new ContactsFragment();
+            settingsFragment = new SettingsFragment();
             FragmentTransaction tx = getSupportFragmentManager().beginTransaction();
             tx.add(R.id.fragmentContainer, chatsFragment, TAB_CHATS);
             tx.add(R.id.fragmentContainer, contactsFragment, TAB_CONTACTS);
+            tx.add(R.id.fragmentContainer, settingsFragment, TAB_SETTINGS);
             tx.hide(contactsFragment);
+            tx.hide(settingsFragment);
             tx.commit();
         } else {
             chatsFragment = (ChatsFragment) getSupportFragmentManager().findFragmentByTag(TAB_CHATS);
             contactsFragment = (ContactsFragment) getSupportFragmentManager().findFragmentByTag(TAB_CONTACTS);
+            settingsFragment = (SettingsFragment) getSupportFragmentManager().findFragmentByTag(TAB_SETTINGS);
         }
 
         binding.bottomNav.setOnItemSelectedListener(this::onNavItemSelected);
 
-        String tab = getIntent().getStringExtra(EXTRA_TAB);
-        if (TAB_CONTACTS.equals(tab)) {
-            binding.bottomNav.setSelectedItemId(R.id.nav_contacts);
-            showContacts();
-        } else {
-            binding.bottomNav.setSelectedItemId(R.id.nav_chats);
-            showChats();
-        }
+        String tab =
+                savedInstanceState != null
+                        ? currentTab
+                        : getIntent().getStringExtra(EXTRA_TAB) != null
+                                ? getIntent().getStringExtra(EXTRA_TAB)
+                                : TAB_CHATS;
+        selectTab(tab);
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(STATE_SELECTED_TAB, currentTab);
     }
 
     @Override
@@ -79,12 +98,8 @@ public class MainActivity extends BaseActivity implements MainHost {
         super.onNewIntent(intent);
         setIntent(intent);
         String tab = intent.getStringExtra(EXTRA_TAB);
-        if (TAB_CONTACTS.equals(tab)) {
-            binding.bottomNav.setSelectedItemId(R.id.nav_contacts);
-            showContacts();
-        } else if (TAB_CHATS.equals(tab)) {
-            binding.bottomNav.setSelectedItemId(R.id.nav_chats);
-            showChats();
+        if (tab != null) {
+            selectTab(tab);
         }
     }
 
@@ -97,38 +112,73 @@ public class MainActivity extends BaseActivity implements MainHost {
     }
 
     private boolean onNavItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == R.id.nav_chats) {
+        int id = item.getItemId();
+        if (id == R.id.nav_chats) {
+            currentTab = TAB_CHATS;
             showChats();
             return true;
         }
-        if (item.getItemId() == R.id.nav_contacts) {
+        if (id == R.id.nav_contacts) {
+            currentTab = TAB_CONTACTS;
             showContacts();
+            return true;
+        }
+        if (id == R.id.nav_settings) {
+            currentTab = TAB_SETTINGS;
+            showSettings();
             return true;
         }
         return false;
     }
 
-    private void showChats() {
-        if (chatsFragment == null || contactsFragment == null) {
-            return;
+    private void selectTab(@NonNull String tab) {
+        currentTab = tab;
+        switch (tab) {
+            case TAB_CONTACTS -> {
+                binding.bottomNav.setSelectedItemId(R.id.nav_contacts);
+                showContacts();
+            }
+            case TAB_SETTINGS -> {
+                binding.bottomNav.setSelectedItemId(R.id.nav_settings);
+                showSettings();
+            }
+            default -> {
+                binding.bottomNav.setSelectedItemId(R.id.nav_chats);
+                showChats();
+            }
         }
-        getSupportFragmentManager()
-                .beginTransaction()
-                .show(chatsFragment)
-                .hide(contactsFragment)
-                .commit();
+    }
+
+    private void showChats() {
+        showOnly(chatsFragment);
     }
 
     private void showContacts() {
-        if (chatsFragment == null || contactsFragment == null) {
+        showOnly(contactsFragment);
+        if (contactsFragment != null) {
+            contactsFragment.refresh();
+        }
+    }
+
+    private void showSettings() {
+        showOnly(settingsFragment);
+    }
+
+    private void showOnly(Fragment target) {
+        if (target == null) {
             return;
         }
-        getSupportFragmentManager()
-                .beginTransaction()
-                .hide(chatsFragment)
-                .show(contactsFragment)
-                .commit();
-        contactsFragment.refresh();
+        FragmentTransaction tx = getSupportFragmentManager().beginTransaction();
+        if (chatsFragment != null && chatsFragment != target) {
+            tx.hide(chatsFragment);
+        }
+        if (contactsFragment != null && contactsFragment != target) {
+            tx.hide(contactsFragment);
+        }
+        if (settingsFragment != null && settingsFragment != target) {
+            tx.hide(settingsFragment);
+        }
+        tx.show(target).commit();
     }
 
     @Override

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<lint>
+    <!-- Cleartext is intentional in debug builds for local/self-hosted HTTP servers. -->
+    <issue id="InsecureBaseConfiguration">
+        <ignore path="src/debug/res/xml/network_security_config.xml" />
+    </issue>
+</lint>

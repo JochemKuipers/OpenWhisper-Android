@@ -22,10 +22,12 @@ final class TokenAuthenticator implements Authenticator {
     private static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
 
     private final TokenStore tokenStore;
+    private final ApiConfig apiConfig;
     private final Gson gson = new Gson();
 
-    TokenAuthenticator(TokenStore tokenStore) {
+    TokenAuthenticator(TokenStore tokenStore, ApiConfig apiConfig) {
         this.tokenStore = tokenStore;
+        this.apiConfig = apiConfig;
     }
 
     @Nullable
@@ -50,7 +52,7 @@ final class TokenAuthenticator implements Authenticator {
         String json = gson.toJson(Collections.singletonMap("refresh", refresh));
         Request refreshReq =
                 new Request.Builder()
-                        .url(ApiConfig.resolve("token/refresh/"))
+                        .url(apiConfig.resolve("token/refresh/"))
                         .post(RequestBody.create(json, JSON))
                         .header("Accept", "application/json")
                         .build();
