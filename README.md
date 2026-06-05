@@ -137,7 +137,7 @@ Run instrumented tests locally if CI emulator jobs are flaky.
 GitHub Actions runs on every push and pull request (`.github/workflows/android.yml`):
 
 - **unit-and-lint** — `testDebugUnitTest` and `lintDebug` on Ubuntu (JDK 17, 21, 23)
-- **instrumented** — `connectedDebugAndroidTest` on an Android emulator
+- **instrumented** — `connectedDebugAndroidTest` on an API 30 emulator (Ubuntu + KVM, JDK 17)
 
 ## Releasing
 
